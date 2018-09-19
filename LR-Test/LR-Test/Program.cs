@@ -1,4 +1,5 @@
 ﻿using LR_Test.Game;
+using LR_Test.ReinforcementLearning.NeuralNetwork;
 using System;
 
 namespace LR_Test
@@ -6,6 +7,20 @@ namespace LR_Test
     class Program
     {
         static void Main(string[] args)
+        {
+            //RunGame();
+            TestNeuralNetwork();
+        }
+
+        public static void TestNeuralNetwork()
+        {
+            Console.Out.WriteLine("Neural Network");
+            NeuralNetwork network = NeuralNetworkBuilder.Generate(";", 16, 8, 8, 4);
+            Console.Out.WriteLine(network);
+            var key = Console.ReadKey();
+        }
+
+        public static void RunGame()
         {
             Game2048 game = new Game2048();
             game.Start();

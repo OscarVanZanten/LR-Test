@@ -18,22 +18,21 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
             this.Out = new List<Connection>();
         }
 
-        public double Result
+        public void Calculate()
         {
-            get
+            double sum = Bias;
+
+            foreach (Connection connection in In)
             {
-                double sum = Bias;
-
-                foreach (Connection connection in In)
-                {
-                    sum += connection.Result;
-                }
-
-                double res = MathHelper.Sigmoid(sum);
-                //double res = Math.Max(0, sum);
-
-                return res;
+                sum += connection.Result;
             }
+
+            double res = MathHelper.Sigmoid(sum);
+           // double res = Math.Max(0, sum);
+
+            Value = res;
         }
+
+      
     }
 }

@@ -20,7 +20,7 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
                 throw new Exception($"Invalid input length to inputnodes, Nodes: { Nodes[0].Length}, Values: {values.Length}");
             }
 
-            for (int i = 0; i < values.Length; i++)
+            for (int i = 0; i < Nodes[0].Length; i++)
             {
                 Nodes[0][i].Value = values[i];
             }
@@ -28,9 +28,17 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
             double[] result = new double[Nodes[Nodes.Length - 1].Length];
 
 
+            for (int i = 1; i < Nodes.Length; i++)
+            {
+                for (int j = 1; j < Nodes[i].Length; j++)
+                {
+                    Nodes[i][j].Calculate();
+                }
+            }
+
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = Nodes[Nodes.Length-1][i].Result;
+                result[i] = Nodes[Nodes.Length-1][i].Value;
             }
 
             return result;

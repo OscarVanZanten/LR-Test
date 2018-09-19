@@ -32,8 +32,8 @@ namespace LR_Test
 
         public static void RunNeuralNetworkGame()
         {
-
-            int[] networkFormat = new int[] { 16, 32,32, 4 };
+            Random random = new Random();
+            int[] networkFormat = new int[] { 16,8, 8, 4 };
 
             string data = NeuralNetworkBuilder.GenerateRandomNeuralNetworkData(networkFormat);
 
@@ -41,12 +41,23 @@ namespace LR_Test
             game.Start();
             Console.WriteLine(game);
 
+            int lastValue =-1;
+
             NeuralNetwork network = NeuralNetworkBuilder.GenerateNeuralNetwork(data, networkFormat);
             while (!game.IsGameOver)
             {
                 var result = network.Execute(game.Board.State);
                 var highest = result.Max();
                 var action = Array.IndexOf<double>(result, highest);
+
+                if (lastValue == action)
+                {
+                    action = random.Next(4);
+                }
+                else
+                {
+                    lastValue = action;
+                }
 
                 Move move = (Move)action;
 
@@ -56,7 +67,8 @@ namespace LR_Test
                 Console.WriteLine(game);
                 Console.WriteLine(highest);
                 Console.WriteLine(move);
-                Thread.Sleep(1000);
+
+                Thread.Sleep(10);
 
             }
             Console.ReadKey();

@@ -19,6 +19,17 @@ namespace LR_Test.Game
         }
 
         /// <summary>
+        /// Clears the board
+        /// </summary>
+        public void Clear()
+        {
+            for (int i = 0; i < State.Length; i++)
+            {
+                State[i] = 0;
+            }
+        }
+
+        /// <summary>
         /// sets a value for coords
         /// </summary>
         /// <param name="x"></param>

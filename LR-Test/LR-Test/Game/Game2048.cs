@@ -12,7 +12,7 @@ namespace LR_Test.Game
 
         public Board Board { get; internal set; }
 
-        public ulong Score { get; internal set; }
+        public long Score { get; internal set; }
 
         public bool IsGameOver { get { return !CanMakeMove(Move.Down) && !CanMakeMove(Move.Left) && !CanMakeMove(Move.Right) && !CanMakeMove(Move.Up); } }
 
@@ -25,19 +25,23 @@ namespace LR_Test.Game
             this.random = new Random();
         }
 
+        /// <summary>
+        /// Starts the game
+        /// </summary>
         public void Start()
         {
+            Score = 0;
+            Board.Clear();
             PlaceNewNumber();
             PlaceNewNumber();
         }
 
-
         /// <summary>
         /// Makes a move on the board
         /// </summary>
-        public void MakeMove(Move move)
+        public bool MakeMove(Move move)
         {
-            if (!CanMakeMove(move)) { return; }
+            if (!CanMakeMove(move)) { return false; }
 
             switch (move)
             {
@@ -56,6 +60,7 @@ namespace LR_Test.Game
             }
 
             PlaceNewNumber();
+            return true;
         }
 
         /// <summary>
@@ -81,7 +86,7 @@ namespace LR_Test.Game
                         else if (Board.GetValue(x, yy) == Board.GetValue(x, y))
                         {
                             int newValue = Board.GetValue(x, yy) + 1;
-                            Score += (ulong)Math.Pow(2, newValue);
+                            Score += (long)Math.Pow(2, newValue);
 
                             Board.SetValue(x, yy, newValue);
                             Board.SetValue(x, y, 0);
@@ -126,7 +131,7 @@ namespace LR_Test.Game
                         else if (Board.GetValue(xx, y) == Board.GetValue(x, y))
                         {
                             int newValue = Board.GetValue(xx, y) + 1;
-                            Score += (ulong)Math.Pow(2, newValue);
+                            Score += (long)Math.Pow(2, newValue);
 
                             Board.SetValue(xx, y, newValue);
                             Board.SetValue(x, y, 0);
@@ -171,7 +176,7 @@ namespace LR_Test.Game
                         else if (Board.GetValue(xx, y) == Board.GetValue(x, y))
                         {
                             int newValue = Board.GetValue(xx, y) + 1;
-                            Score += (ulong)Math.Pow(2, newValue);
+                            Score += (long)Math.Pow(2, newValue);
 
                             Board.SetValue(xx, y, newValue);
                             Board.SetValue(x, y, 0);
@@ -216,7 +221,7 @@ namespace LR_Test.Game
                         else if (Board.GetValue(x, yy) == Board.GetValue(x, y))
                         {
                             int newValue = Board.GetValue(x, yy) + 1;
-                            Score += (ulong)Math.Pow(2, newValue);
+                            Score += (long)Math.Pow(2, newValue);
 
                             Board.SetValue(x, yy, newValue);
                             Board.SetValue(x, y, 0);

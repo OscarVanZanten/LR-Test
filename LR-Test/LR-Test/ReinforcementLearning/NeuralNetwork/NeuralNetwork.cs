@@ -25,9 +25,10 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
                 Nodes[0][i].Value = values[i];
             }
 
-            double[] result = new double[values.Length];
+            double[] result = new double[Nodes[Nodes.Length - 1].Length];
 
-            for (int i = 0; i < values.Length; i++)
+
+            for (int i = 0; i < result.Length; i++)
             {
                 result[i] = Nodes[Nodes.Length-1][i].Result;
             }

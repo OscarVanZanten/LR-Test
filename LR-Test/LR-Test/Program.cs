@@ -1,6 +1,8 @@
 ﻿using LR_Test.Game;
 using LR_Test.ReinforcementLearning.NeuralNetwork;
 using System;
+using System.Threading;
+using System.Linq;
 
 namespace LR_Test
 {
@@ -9,15 +11,55 @@ namespace LR_Test
         static void Main(string[] args)
         {
             //RunGame();
-            TestNeuralNetwork();
+            //TestNeuralNetwork();
+            RunNeuralNetworkGame();
         }
 
         public static void TestNeuralNetwork()
         {
             Console.Out.WriteLine("Neural Network");
-            NeuralNetwork network = NeuralNetworkBuilder.Generate(";", 16, 8, 8, 4);
+
+            int[] networkFormat = new int[] { 16, 8, 8, 4 };
+
+            string data = NeuralNetworkBuilder.GenerateRandomNeuralNetworkData(networkFormat);
+            Console.Out.WriteLine(data);
+
+            NeuralNetwork network = NeuralNetworkBuilder.GenerateNeuralNetwork(data, networkFormat);
             Console.Out.WriteLine(network);
+
             var key = Console.ReadKey();
+        }
+
+        public static void RunNeuralNetworkGame()
+        {
+
+            int[] networkFormat = new int[] { 16, 32,32, 4 };
+
+            string data = NeuralNetworkBuilder.GenerateRandomNeuralNetworkData(networkFormat);
+
+            Game2048 game = new Game2048();
+            game.Start();
+            Console.WriteLine(game);
+
+            NeuralNetwork network = NeuralNetworkBuilder.GenerateNeuralNetwork(data, networkFormat);
+            while (!game.IsGameOver)
+            {
+                var result = network.Execute(game.Board.State);
+                var highest = result.Max();
+                var action = Array.IndexOf<double>(result, highest);
+
+                Move move = (Move)action;
+
+                game.MakeMove(move);
+                Console.Clear();
+
+                Console.WriteLine(game);
+                Console.WriteLine(highest);
+                Console.WriteLine(move);
+                Thread.Sleep(1000);
+
+            }
+            Console.ReadKey();
         }
 
         public static void RunGame()

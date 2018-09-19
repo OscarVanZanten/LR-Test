@@ -30,6 +30,7 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
                 }
 
                 double res = MathHelper.Sigmoid(sum);
+                //double res = Math.Max(0, sum);
 
                 return res;
             }

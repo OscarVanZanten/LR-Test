@@ -7,55 +7,101 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
     public class NeuralNetworkBuilder
     {
         /// <summary>
-        /// 
+        /// Generates random data for a neural network with a certain format
+        /// </summary>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        public static string GenerateRandomNeuralNetworkData(int[] format)
+        {
+            Random random = new Random();
+
+            int biasCount = 0;
+            int weightCount = 0;
+
+            for (int i = 0; i < format.Length; i++)
+            {
+                if (i > 0)
+                {
+                    biasCount += format[i];
+                    weightCount += format[i - 1] * format[i];
+                }
+            }
+
+            string result = "";
+
+            for (int i = 0; i < biasCount; i++)
+            {
+                result += random.NextDouble() * 10 - 5 + (biasCount - 1 != i ? ";" : "");
+            }
+
+            result += "|";
+
+
+            for (int i = 0; i < weightCount; i++)
+            {
+                result += random.NextDouble() * 2 - 1 + (weightCount - 1 != i ? ";" : "");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Generates a neural network with a specific bias/weight distrubution 
         /// </summary>
         /// <param name="data">AI data biases/weights. Format: "bias1, bias2, bias3...... ; weight1, weight2, weight3"</param>
-        /// <param name="size"></param>
+        /// <param name="format">format of the neural network</param>
         /// <returns></returns>
-        public static NeuralNetwork Generate(string data, params int[] size)
+        public static NeuralNetwork GenerateNeuralNetwork(string data, params int[] format)
         {
-            if (size.Length < 2)
+            if (format.Length < 2)
             {
                 throw new Exception("Size of Neural Network needs to have input and output nodes");
             }
 
-            if (!data.Contains(";"))
+            if (!data.Contains("|"))
             {
                 throw new Exception("Illegal format");
             }
 
-            string[] splitData = data.Split(';');
-            string[] biases = splitData[0].Split(",");
-            string[] weights = splitData[1].Split(",");
+            string[] splitData = data.Split('|');
+            string[] biases = splitData[0].Split(";");
+            string[] weights = splitData[1].Split(";");
 
             int biasCount = 0;
             int weightCount = 0;
 
             // Create network space
-            Node[][] nodes = new Node[size.Length][];
+            Node[][] nodes = new Node[format.Length][];
 
-            for (int i = 0; i < size.Length; i++)
+            for (int i = 0; i < format.Length; i++)
             {
-                if (size[i] == 0)
+                if (format[i] == 0)
                 {
                     throw new Exception("new line of notes need to actually contain nodes");
                 }
 
                 // Create layer space
-                nodes[i] = new Node[size[i]];
+                nodes[i] = new Node[format[i]];
 
                 // Fill layer
-                for (int j = 0; j < size[i]; j++)
+                for (int j = 0; j < format[i]; j++)
                 {
                     if (biasCount >= biases.Length)
                     {
                         throw new Exception("Missing bias");
                     }
 
-                    // TODO: get these out of format
-                    if (!int.TryParse(biases[biasCount++], out var bias))
-                    {
-                        throw new Exception("Invalid bias");
+                    double bias = 0;
+
+                    if (i > 0) {
+
+                        string b = biases[biasCount++];
+                        bool valid = double.TryParse(b, out bias);
+                        // TODO: get these out of format
+                        if (!valid)
+                        {
+                            throw new Exception("Invalid bias");
+                        }
                     }
 
                     // Create node
@@ -69,9 +115,9 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
                 // Create connections
                 if (i > 0)
                 {
-                    for (int k = 0; k < size[i - 1]; k++)
+                    for (int k = 0; k < format[i - 1]; k++)
                     {
-                        for (int l = 0; l < size[i]; l++)
+                        for (int l = 0; l < format[i]; l++)
                         {
                             Node from = nodes[i - 1][k];
                             Node to = nodes[i][l];
@@ -81,11 +127,16 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
                                 throw new Exception("Missing weights");
                             }
 
-                            if (!int.TryParse(weights[weightCount++], out var weight))
+                            double weight = 0;
+                            if (i > 0)
                             {
-                                throw new Exception("Invalid weight");
-                            }
+                                bool valid = double.TryParse(weights[weightCount++], out weight);
 
+                                if (!valid)
+                                {
+                                    throw new Exception("Invalid weight");
+                                }
+                            }
                             Connection connection = new Connection()
                             {
                                 From = from,
@@ -102,6 +153,5 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
 
             return new NeuralNetwork(nodes);
         }
-
     }
 }

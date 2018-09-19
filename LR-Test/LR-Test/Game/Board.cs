@@ -8,14 +8,14 @@ namespace LR_Test.Game
     public class Board
     {
         public const int BOARDSIZE = 4;
-        private uint[] board;
+        public int[] State { get; internal set; }
       
         /// <summary>
         /// Constructor
         /// </summary>
         public Board()
         {
-            this.board = new uint[BOARDSIZE * BOARDSIZE];
+            this.State = new int[BOARDSIZE * BOARDSIZE];
         }
 
         /// <summary>
@@ -24,9 +24,9 @@ namespace LR_Test.Game
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="value"></param>
-        public void SetValue(int x, int y, uint value)
+        public void SetValue(int x, int y, int value)
         {
-            board[x + y * BOARDSIZE] = value;
+            State[x + y * BOARDSIZE] = value;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace LR_Test.Game
         /// </summary>
         /// <param name="point"></param>
         /// <param name="value"></param>
-        public void SetValue(Point point, uint value)
+        public void SetValue(Point point, int value)
         {
             SetValue(point.X, point.Y, value);
         }
@@ -45,9 +45,9 @@ namespace LR_Test.Game
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        public uint GetValue(int x, int y)
+        public int GetValue(int x, int y)
         {
-            return board[x + y * BOARDSIZE];
+            return State[x + y * BOARDSIZE];
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace LR_Test.Game
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public uint GetValue(Point point)
+        public int GetValue(Point point)
         {
             return GetValue(point.X, point.Y);
         }
@@ -65,7 +65,7 @@ namespace LR_Test.Game
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public List<Point> GetPointsForValue(uint value)
+        public List<Point> GetPointsForValue(int value)
         {
             List<Point> possiblePoints = new List<Point>();
 
@@ -73,7 +73,7 @@ namespace LR_Test.Game
             {
                 for (int x = 0; x < BOARDSIZE; x++)
                 {
-                    uint foundValue = board[x + y * BOARDSIZE];
+                    int foundValue = State[x + y * BOARDSIZE];
                     if (foundValue == value)
                     {
                         Point found = new Point(x, y);
@@ -98,7 +98,7 @@ namespace LR_Test.Game
                 result += "[";
                 for (int x = 0; x < BOARDSIZE; x++)
                 {
-                    double value = Math.Pow(2, board[x + y * BOARDSIZE]);
+                    double value = Math.Pow(2, State[x + y * BOARDSIZE]);
                     value = value == 1 ? 0 : value;
                     result += $"{value}";
                     if (x + 1 < BOARDSIZE)

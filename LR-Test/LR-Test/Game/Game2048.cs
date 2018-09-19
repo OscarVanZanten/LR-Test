@@ -8,17 +8,20 @@ namespace LR_Test.Game
     {
         private const double HIGHERNUMBERPLACEDCHANCE = 0.8d;
 
-        private Board board;
         private Random random;
 
+        public Board Board { get; internal set; }
+
         public ulong Score { get; internal set; }
+
+        public bool IsGameOver { get { return !CanMakeMove(Move.Down) && !CanMakeMove(Move.Left) && !CanMakeMove(Move.Right) && !CanMakeMove(Move.Up); } }
 
         /// <summary>
         /// Constructor
         /// </summary>
         public Game2048()
         {
-            this.board = new Board();
+            this.Board = new Board();
             this.random = new Random();
         }
 
@@ -27,6 +30,7 @@ namespace LR_Test.Game
             PlaceNewNumber();
             PlaceNewNumber();
         }
+
 
         /// <summary>
         /// Makes a move on the board
@@ -63,24 +67,24 @@ namespace LR_Test.Game
             {
                 for (int y = Board.BOARDSIZE - 1; y >= 0; y--)
                 {
-                    if (board.GetValue(x, y) == 0) { continue; }
+                    if (Board.GetValue(x, y) == 0) { continue; }
 
                     bool placed = false;
                     Point lastEmpty = null;
 
                     for (int yy = y + 1; yy < Board.BOARDSIZE; yy++)
                     {
-                        if (board.GetValue(x, yy) == 0)
+                        if (Board.GetValue(x, yy) == 0)
                         {
                             lastEmpty = new Point(x, yy);
                         }
-                        else if (board.GetValue(x, yy) == board.GetValue(x, y))
+                        else if (Board.GetValue(x, yy) == Board.GetValue(x, y))
                         {
-                            uint newValue = board.GetValue(x, yy) + 1;
+                            int newValue = Board.GetValue(x, yy) + 1;
                             Score += (ulong)Math.Pow(2, newValue);
 
-                            board.SetValue(x, yy, newValue);
-                            board.SetValue(x, y, 0);
+                            Board.SetValue(x, yy, newValue);
+                            Board.SetValue(x, y, 0);
                             placed = true;
                             break;
                         }
@@ -92,8 +96,8 @@ namespace LR_Test.Game
 
                     if (!placed && lastEmpty != null)
                     {
-                        board.SetValue(lastEmpty.X, lastEmpty.Y, board.GetValue(x, y));
-                        board.SetValue(x, y, 0);
+                        Board.SetValue(lastEmpty.X, lastEmpty.Y, Board.GetValue(x, y));
+                        Board.SetValue(x, y, 0);
                     }
                 }
             }
@@ -108,24 +112,24 @@ namespace LR_Test.Game
             {
                 for (int x = Board.BOARDSIZE - 1; x >= 0; x--)
                 {
-                    if (board.GetValue(x, y) == 0) { continue; }
+                    if (Board.GetValue(x, y) == 0) { continue; }
 
                     bool placed = false;
                     Point lastEmpty = null;
 
                     for (int xx = x + 1; xx < Board.BOARDSIZE; xx++)
                     {
-                        if (board.GetValue(xx, y) == 0)
+                        if (Board.GetValue(xx, y) == 0)
                         {
                             lastEmpty = new Point(xx, y);
                         }
-                        else if (board.GetValue(xx, y) == board.GetValue(x, y))
+                        else if (Board.GetValue(xx, y) == Board.GetValue(x, y))
                         {
-                            uint newValue = board.GetValue(xx, y) + 1;
+                            int newValue = Board.GetValue(xx, y) + 1;
                             Score += (ulong)Math.Pow(2, newValue);
 
-                            board.SetValue(xx, y, newValue);
-                            board.SetValue(x, y, 0);
+                            Board.SetValue(xx, y, newValue);
+                            Board.SetValue(x, y, 0);
                             placed = true;
                             break;
                         }
@@ -137,8 +141,8 @@ namespace LR_Test.Game
 
                     if (!placed && lastEmpty != null)
                     {
-                        board.SetValue(lastEmpty.X, lastEmpty.Y, board.GetValue(x, y));
-                        board.SetValue(x, y, 0);
+                        Board.SetValue(lastEmpty.X, lastEmpty.Y, Board.GetValue(x, y));
+                        Board.SetValue(x, y, 0);
                     }
                 }
             }
@@ -153,24 +157,24 @@ namespace LR_Test.Game
             {
                 for (int x = 0; x < Board.BOARDSIZE; x++)
                 {
-                    if (board.GetValue(x, y) == 0) { continue; }
+                    if (Board.GetValue(x, y) == 0) { continue; }
 
                     bool placed = false;
                     Point lastEmpty = null;
 
                     for (int xx = x - 1; xx >= 0; xx--)
                     {
-                        if (board.GetValue(xx, y) == 0)
+                        if (Board.GetValue(xx, y) == 0)
                         {
                             lastEmpty = new Point(xx, y);
                         }
-                        else if (board.GetValue(xx, y) == board.GetValue(x, y))
+                        else if (Board.GetValue(xx, y) == Board.GetValue(x, y))
                         {
-                            uint newValue = board.GetValue(xx, y) + 1;
+                            int newValue = Board.GetValue(xx, y) + 1;
                             Score += (ulong)Math.Pow(2, newValue);
 
-                            board.SetValue(xx, y, newValue);
-                            board.SetValue(x, y, 0);
+                            Board.SetValue(xx, y, newValue);
+                            Board.SetValue(x, y, 0);
                             placed = true;
                             break;
                         }
@@ -182,8 +186,8 @@ namespace LR_Test.Game
 
                     if (!placed && lastEmpty != null)
                     {
-                        board.SetValue(lastEmpty.X, lastEmpty.Y, board.GetValue(x, y));
-                        board.SetValue(x, y, 0);
+                        Board.SetValue(lastEmpty.X, lastEmpty.Y, Board.GetValue(x, y));
+                        Board.SetValue(x, y, 0);
                     }
                 }
             }
@@ -198,24 +202,24 @@ namespace LR_Test.Game
             {
                 for (int y = 0; y < Board.BOARDSIZE; y++)
                 {
-                    if (board.GetValue(x, y) == 0) { continue; }
+                    if (Board.GetValue(x, y) == 0) { continue; }
 
                     bool placed = false;
                     Point lastEmpty = null;
 
                     for (int yy = y - 1; yy >= 0; yy--)
                     {
-                        if (board.GetValue(x, yy) == 0)
+                        if (Board.GetValue(x, yy) == 0)
                         {
                             lastEmpty = new Point(x, yy);
                         }
-                        else if (board.GetValue(x, yy) == board.GetValue(x, y))
+                        else if (Board.GetValue(x, yy) == Board.GetValue(x, y))
                         {
-                            uint newValue = board.GetValue(x, yy) + 1;
+                            int newValue = Board.GetValue(x, yy) + 1;
                             Score += (ulong)Math.Pow(2, newValue);
 
-                            board.SetValue(x, yy, newValue);
-                            board.SetValue(x, y, 0);
+                            Board.SetValue(x, yy, newValue);
+                            Board.SetValue(x, y, 0);
                             placed = true;
                             break;
                         }
@@ -227,8 +231,8 @@ namespace LR_Test.Game
 
                     if (!placed && lastEmpty != null)
                     {
-                        board.SetValue(lastEmpty.X, lastEmpty.Y, board.GetValue(x, y));
-                        board.SetValue(x, y, 0);
+                        Board.SetValue(lastEmpty.X, lastEmpty.Y, Board.GetValue(x, y));
+                        Board.SetValue(x, y, 0);
                     }
                 }
             }
@@ -268,7 +272,7 @@ namespace LR_Test.Game
         /// <returns>if a move is possible</returns>
         public bool CanMakeMove(Move move, int x, int y)
         {
-            if (board.GetValue(x, y) == 0)
+            if (Board.GetValue(x, y) == 0)
             {
                 return false;
             }
@@ -278,40 +282,40 @@ namespace LR_Test.Game
                 case Move.Down:
                     for (int yy = y; yy < Board.BOARDSIZE; yy++)
                     {
-                        if (board.GetValue(x, yy) == 0) { return true; }
+                        if (Board.GetValue(x, yy) == 0) { return true; }
                         if (yy + 1 < Board.BOARDSIZE)
                         {
-                            if (board.GetValue(x, yy) == board.GetValue(x, yy + 1)) { return true; }
+                            if (Board.GetValue(x, yy) == Board.GetValue(x, yy + 1)) { return true; }
                         }
                     }
                     break;
                 case Move.Right:
                     for (int xx = x; xx < Board.BOARDSIZE; xx++)
                     {
-                        if (board.GetValue(xx, y) == 0) { return true; }
+                        if (Board.GetValue(xx, y) == 0) { return true; }
                         if (xx + 1 < Board.BOARDSIZE)
                         {
-                            if (board.GetValue(xx, y) == board.GetValue(xx + 1, y)) { return true; }
+                            if (Board.GetValue(xx, y) == Board.GetValue(xx + 1, y)) { return true; }
                         }
                     }
                     break;
                 case Move.Left:
                     for (int xx = x; xx >= 0; xx--)
                     {
-                        if (board.GetValue(xx, y) == 0) { return true; }
+                        if (Board.GetValue(xx, y) == 0) { return true; }
                         if (xx - 1 >= 0)
                         {
-                            if (board.GetValue(xx, y) == board.GetValue(xx - 1, y)) { return true; }
+                            if (Board.GetValue(xx, y) == Board.GetValue(xx - 1, y)) { return true; }
                         }
                     }
                     break;
                 case Move.Up:
                     for (int yy = y; yy >= 0; yy--)
                     {
-                        if (board.GetValue(x, yy) == 0) { return true; }
+                        if (Board.GetValue(x, yy) == 0) { return true; }
                         if (yy - 1 >= 0)
                         {
-                            if (board.GetValue(x, yy) == board.GetValue(x, yy - 1)) { return true; }
+                            if (Board.GetValue(x, yy) == Board.GetValue(x, yy - 1)) { return true; }
                         }
                     }
                     break;
@@ -325,7 +329,7 @@ namespace LR_Test.Game
         /// <returns>if a new number could have been placed</returns>
         public bool PlaceNewNumber()
         {
-            List<Point> emptyPoints = board.GetPointsForValue(0);
+            List<Point> emptyPoints = Board.GetPointsForValue(0);
 
             // Return false if no points are available
             if (emptyPoints.Count == 0)
@@ -341,11 +345,11 @@ namespace LR_Test.Game
 
             if (higherNumberPlaced)
             {
-                board.SetValue(selected, 2);
+                Board.SetValue(selected, 2);
             }
             else
             {
-                board.SetValue(selected, 1);
+                Board.SetValue(selected, 1);
             }
 
             return true;
@@ -357,7 +361,7 @@ namespace LR_Test.Game
         /// <returns></returns>
         public override string ToString()
         {
-            string result = Score + "\n" + board.ToString();
+            string result = Score + "\n" + Board.ToString();
 
             return result;
         }

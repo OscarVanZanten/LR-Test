@@ -7,7 +7,7 @@ namespace LR_Test.Game
 {
     public class Board
     {
-        private const uint BOARDSIZE = 4;
+        public const int BOARDSIZE = 4;
         private uint[] board;
       
         /// <summary>

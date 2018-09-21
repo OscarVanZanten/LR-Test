@@ -18,6 +18,16 @@ namespace LR_Test.Game
             this.State = new int[BOARDSIZE * BOARDSIZE];
         }
 
+        public Board(int[] State)
+        {
+            if (State.Length != BOARDSIZE * BOARDSIZE)
+            {
+                throw new Exception("Invalid board info");
+            }
+
+            this.State = State;
+        }
+
         /// <summary>
         /// Clears the board
         /// </summary>
@@ -37,7 +47,10 @@ namespace LR_Test.Game
         /// <param name="value"></param>
         public void SetValue(int x, int y, int value)
         {
-            State[x + y * BOARDSIZE] = value;
+            if (x > 0 && y > 0)
+            {
+                State[x + y * BOARDSIZE] = value;
+            }
         }
 
         /// <summary>

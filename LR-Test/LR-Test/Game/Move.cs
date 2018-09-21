@@ -9,6 +9,6 @@ namespace LR_Test.Game
     /// </summary>
     public enum Move
     {
-        Right, Left, Up, Down
+        Right = 0, Left = 1, Up =2, Down =3
     }
 }

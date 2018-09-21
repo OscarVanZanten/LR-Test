@@ -31,7 +31,7 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
 
             for (int i = 0; i < biasCount; i++)
             {
-                result += random.NextDouble() * 10 - 5 + (biasCount - 1 != i ? ";" : "");
+                result += 1 + (biasCount - 1 != i ? ";" : "");// random.NextDouble() * 10 - 5 + (biasCount - 1 != i ? ";" : "");
             }
 
             result += "|";

@@ -14,7 +14,6 @@ namespace LR_Test.Game
 
         public long Score { get; internal set; }
 
-        public bool IsGameOver { get { return !CanMakeMove(Move.Down) && !CanMakeMove(Move.Left) && !CanMakeMove(Move.Right) && !CanMakeMove(Move.Up); } }
 
         /// <summary>
         /// Constructor
@@ -23,6 +22,43 @@ namespace LR_Test.Game
         {
             this.Board = new Board();
             this.random = new Random();
+        }
+
+        public bool CanMove(Board board)
+        {
+            for (int x = 0; x < Board.BOARDSIZE; x++)
+            {
+                for (int y = 0; y < Board.BOARDSIZE; y++)
+                {
+                    var selected = board.GetValue(x, y);
+
+                    if (selected == 0)
+                    {
+                        return true;
+                    }
+                    if (x > 0)
+                    {
+                        if (selected == board.GetValue(x - 1, y))
+                        {
+                            return true;
+                        }
+                    }
+                    if (y > 0)
+                    {
+                        if (selected == board.GetValue(x, y - 1))
+                        {
+                            return true;
+                        }
+
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool CanMove()
+        {
+            return CanMove(Board);
         }
 
         /// <summary>
@@ -36,60 +72,72 @@ namespace LR_Test.Game
             PlaceNewNumber();
         }
 
+        public long MakeMove(Move move)
+        {
+            var scoreFromMove = MakeMove(move, Board);
+            scoreFromMove = scoreFromMove >= 0 ? scoreFromMove : 0;
+            this.Score += scoreFromMove;
+
+            return scoreFromMove;
+        }
+
         /// <summary>
         /// Makes a move on the board
         /// </summary>
-        public bool MakeMove(Move move)
+        public long MakeMove(Move move, Board board)
         {
-            if (!CanMakeMove(move)) { return false; }
+
+            long scoreFromMove = 0;
 
             switch (move)
             {
                 case Move.Down:
-                    MoveDown();
+                    scoreFromMove += MoveDown(board);
                     break;
                 case Move.Right:
-                    MoveRight();
+                    scoreFromMove += MoveRight(board);
                     break;
                 case Move.Left:
-                    MoveLeft();
+                    scoreFromMove += MoveLeft(board);
                     break;
                 case Move.Up:
-                    MoveUp();
+                    scoreFromMove += MoveUp(board);
                     break;
             }
 
-            PlaceNewNumber();
-            return true;
+
+            return scoreFromMove;
         }
 
         /// <summary>
         /// Moves the tiles downward
         /// </summary>
-        private void MoveDown()
+        private long MoveDown(Board board)
         {
+            long score = 0;
+
             for (int x = 0; x < Board.BOARDSIZE; x++)
             {
                 for (int y = Board.BOARDSIZE - 1; y >= 0; y--)
                 {
-                    if (Board.GetValue(x, y) == 0) { continue; }
+                    if (board.GetValue(x, y) == 0) { continue; }
 
                     bool placed = false;
                     Point lastEmpty = null;
 
                     for (int yy = y + 1; yy < Board.BOARDSIZE; yy++)
                     {
-                        if (Board.GetValue(x, yy) == 0)
+                        if (board.GetValue(x, yy) == 0)
                         {
                             lastEmpty = new Point(x, yy);
                         }
-                        else if (Board.GetValue(x, yy) == Board.GetValue(x, y))
+                        else if (board.GetValue(x, yy) == board.GetValue(x, y))
                         {
-                            int newValue = Board.GetValue(x, yy) + 1;
-                            Score += (long)Math.Pow(2, newValue);
+                            int newValue = board.GetValue(x, yy) + 1;
+                            score += (long)Math.Pow(2, newValue);
 
-                            Board.SetValue(x, yy, newValue);
-                            Board.SetValue(x, y, 0);
+                            board.SetValue(x, yy, newValue);
+                            board.SetValue(x, y, 0);
                             placed = true;
                             break;
                         }
@@ -101,40 +149,44 @@ namespace LR_Test.Game
 
                     if (!placed && lastEmpty != null)
                     {
-                        Board.SetValue(lastEmpty.X, lastEmpty.Y, Board.GetValue(x, y));
-                        Board.SetValue(x, y, 0);
+                        board.SetValue(lastEmpty.X, lastEmpty.Y, board.GetValue(x, y));
+                        board.SetValue(x, y, 0);
                     }
                 }
             }
+
+            return score > 0 ? score : -1;
         }
 
         /// <summary>
         /// Moves the tiles right
         /// </summary>
-        private void MoveRight()
+        private long MoveRight(Board board)
         {
+            long score = 0;
+
             for (int y = 0; y < Board.BOARDSIZE; y++)
             {
                 for (int x = Board.BOARDSIZE - 1; x >= 0; x--)
                 {
-                    if (Board.GetValue(x, y) == 0) { continue; }
+                    if (board.GetValue(x, y) == 0) { continue; }
 
                     bool placed = false;
                     Point lastEmpty = null;
 
                     for (int xx = x + 1; xx < Board.BOARDSIZE; xx++)
                     {
-                        if (Board.GetValue(xx, y) == 0)
+                        if (board.GetValue(xx, y) == 0)
                         {
                             lastEmpty = new Point(xx, y);
                         }
-                        else if (Board.GetValue(xx, y) == Board.GetValue(x, y))
+                        else if (board.GetValue(xx, y) == board.GetValue(x, y))
                         {
-                            int newValue = Board.GetValue(xx, y) + 1;
-                            Score += (long)Math.Pow(2, newValue);
+                            int newValue = board.GetValue(xx, y) + 1;
+                            score += (long)Math.Pow(2, newValue);
 
-                            Board.SetValue(xx, y, newValue);
-                            Board.SetValue(x, y, 0);
+                            board.SetValue(xx, y, newValue);
+                            board.SetValue(x, y, 0);
                             placed = true;
                             break;
                         }
@@ -146,40 +198,43 @@ namespace LR_Test.Game
 
                     if (!placed && lastEmpty != null)
                     {
-                        Board.SetValue(lastEmpty.X, lastEmpty.Y, Board.GetValue(x, y));
-                        Board.SetValue(x, y, 0);
+                        board.SetValue(lastEmpty.X, lastEmpty.Y, board.GetValue(x, y));
+                        board.SetValue(x, y, 0);
                     }
                 }
             }
+            return score > 0 ? score : -1;
         }
 
         /// <summary>
         /// Moves the tiles left
         /// </summary>
-        private void MoveLeft()
+        private long MoveLeft(Board board)
         {
+            long score = 0;
+
             for (int y = 0; y < Board.BOARDSIZE; y++)
             {
                 for (int x = 0; x < Board.BOARDSIZE; x++)
                 {
-                    if (Board.GetValue(x, y) == 0) { continue; }
+                    if (board.GetValue(x, y) == 0) { continue; }
 
                     bool placed = false;
                     Point lastEmpty = null;
 
                     for (int xx = x - 1; xx >= 0; xx--)
                     {
-                        if (Board.GetValue(xx, y) == 0)
+                        if (board.GetValue(xx, y) == 0)
                         {
                             lastEmpty = new Point(xx, y);
                         }
-                        else if (Board.GetValue(xx, y) == Board.GetValue(x, y))
+                        else if (board.GetValue(xx, y) == board.GetValue(x, y))
                         {
-                            int newValue = Board.GetValue(xx, y) + 1;
-                            Score += (long)Math.Pow(2, newValue);
+                            int newValue = board.GetValue(xx, y) + 1;
+                            score += (long)Math.Pow(2, newValue);
 
-                            Board.SetValue(xx, y, newValue);
-                            Board.SetValue(x, y, 0);
+                            board.SetValue(xx, y, newValue);
+                            board.SetValue(x, y, 0);
                             placed = true;
                             break;
                         }
@@ -191,150 +246,69 @@ namespace LR_Test.Game
 
                     if (!placed && lastEmpty != null)
                     {
-                        Board.SetValue(lastEmpty.X, lastEmpty.Y, Board.GetValue(x, y));
-                        Board.SetValue(x, y, 0);
+                        board.SetValue(lastEmpty.X, lastEmpty.Y, board.GetValue(x, y));
+                        board.SetValue(x, y, 0);
                     }
                 }
             }
+            return score > 0 ? score : -1;
         }
 
         /// <summary>
         /// Moves the tiles upwards
         /// </summary>
-        private void MoveUp()
+        private long MoveUp(Board board)
         {
-            for (int x = 0; x < Board.BOARDSIZE; x++)
+            long score = 0;
+            bool moved = false;
+            for (int y = 0; y < Board.BOARDSIZE; y++)
             {
-                for (int y = 0; y < Board.BOARDSIZE; y++)
+                int i = 0;
+                int last = 0;
+
+                for (int x = 0; x < Board.BOARDSIZE; x++)
                 {
-                    if (Board.GetValue(x, y) == 0) { continue; }
+                    var value = board.GetValue(x, y);
 
-                    bool placed = false;
-                    Point lastEmpty = null;
-
-                    for (int yy = y - 1; yy >= 0; yy--)
+                    if (value == last)
                     {
-                        if (Board.GetValue(x, yy) == 0)
-                        {
-                            lastEmpty = new Point(x, yy);
-                        }
-                        else if (Board.GetValue(x, yy) == Board.GetValue(x, y))
-                        {
-                            int newValue = Board.GetValue(x, yy) + 1;
-                            Score += (long)Math.Pow(2, newValue);
-
-                            Board.SetValue(x, yy, newValue);
-                            Board.SetValue(x, y, 0);
-                            placed = true;
-                            break;
-                        }
-                        else
-                        {
-                            break;
-                        }
+                        score += (long)Math.Pow(2, value + 1);
+                        board.SetValue(i-1, y, value + 1);
+                        last = 0;
+                        moved = true;
                     }
-
-                    if (!placed && lastEmpty != null)
+                    else
                     {
-                        Board.SetValue(lastEmpty.X, lastEmpty.Y, Board.GetValue(x, y));
-                        Board.SetValue(x, y, 0);
+                        moved |= (i != x);
+                        board.SetValue(i, y, value );
+                        last = value;
+                        i += 1;
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Checks whether a move is possible
-        /// </summary>
-        /// <returns>if a move is possible</returns>
-        public bool CanMakeMove(Move move)
-        {
-            for (int x = 0; x < Board.BOARDSIZE; x++)
-            {
-                for (int y = 0; y < Board.BOARDSIZE; y++)
+                while (i < Board.BOARDSIZE)
                 {
-                    if (CanMakeMove(move, x, y))
-                    {
-                        return true;
-                    }
+                    board.SetValue(i, y, 0);
+                    i += 1;
                 }
             }
-            return false;
+            return moved ? score : -1;
         }
 
-        /// <summary>
-        /// Checks whether a move is possible for a certain point
-        /// </summary>
-        /// <returns>if a move is possible</returns>
-        public bool CanMakeMove(Move move, Point point)
-        {
-            return CanMakeMove(move, point.X, point.Y);
-        }
 
-        /// <summary>
-        /// Checks whether a move is possible for a certain coords
-        /// </summary>
-        /// <returns>if a move is possible</returns>
-        public bool CanMakeMove(Move move, int x, int y)
-        {
-            if (Board.GetValue(x, y) == 0)
-            {
-                return false;
-            }
 
-            switch (move)
-            {
-                case Move.Down:
-                    for (int yy = y; yy < Board.BOARDSIZE; yy++)
-                    {
-                        if (Board.GetValue(x, yy) == 0) { return true; }
-                        if (yy + 1 < Board.BOARDSIZE)
-                        {
-                            if (Board.GetValue(x, yy) == Board.GetValue(x, yy + 1)) { return true; }
-                        }
-                    }
-                    break;
-                case Move.Right:
-                    for (int xx = x; xx < Board.BOARDSIZE; xx++)
-                    {
-                        if (Board.GetValue(xx, y) == 0) { return true; }
-                        if (xx + 1 < Board.BOARDSIZE)
-                        {
-                            if (Board.GetValue(xx, y) == Board.GetValue(xx + 1, y)) { return true; }
-                        }
-                    }
-                    break;
-                case Move.Left:
-                    for (int xx = x; xx >= 0; xx--)
-                    {
-                        if (Board.GetValue(xx, y) == 0) { return true; }
-                        if (xx - 1 >= 0)
-                        {
-                            if (Board.GetValue(xx, y) == Board.GetValue(xx - 1, y)) { return true; }
-                        }
-                    }
-                    break;
-                case Move.Up:
-                    for (int yy = y; yy >= 0; yy--)
-                    {
-                        if (Board.GetValue(x, yy) == 0) { return true; }
-                        if (yy - 1 >= 0)
-                        {
-                            if (Board.GetValue(x, yy) == Board.GetValue(x, yy - 1)) { return true; }
-                        }
-                    }
-                    break;
-            }
-            return false;
+
+        public bool PlaceNewNumber()
+        {
+            return PlaceNewNumber(Board);
         }
 
         /// <summary>
         /// Places a new number in a empty spot
         /// </summary>
         /// <returns>if a new number could have been placed</returns>
-        public bool PlaceNewNumber()
+        public bool PlaceNewNumber(Board board)
         {
-            List<Point> emptyPoints = Board.GetPointsForValue(0);
+            List<Point> emptyPoints = board.GetPointsForValue(0);
 
             // Return false if no points are available
             if (emptyPoints.Count == 0)
@@ -350,14 +324,46 @@ namespace LR_Test.Game
 
             if (higherNumberPlaced)
             {
-                Board.SetValue(selected, 2);
+                board.SetValue(selected, 2);
             }
             else
             {
-                Board.SetValue(selected, 1);
+                board.SetValue(selected, 1);
             }
 
             return true;
+        }
+
+
+        public double RewardFunction(Board board, Move move, double discount, int currentT, int maxT)
+        {
+            double score = 0;
+            var moved = MakeMove(move, board);
+            for (int i = 0; i < currentT; i++)
+            {
+                Console.Write(" ");
+            }
+            Console.WriteLine($"{currentT}: {move} / {moved}");
+            if (moved > 0)
+            {
+                score += moved * Math.Pow(discount, currentT);
+
+                for (int action = 0; action < 4; action++)
+                {
+                    int[] state = new int[16];
+                    Array.Copy(board.State, state, 16);
+                    Board newboard = new Board(state);
+                    Move nextmove = (Move)action;
+
+                    score += RewardFunction(newboard, nextmove, discount, currentT + 1, maxT);
+                }
+            }
+            else
+            {
+                score += 0 * Math.Pow(discount, currentT);
+            }
+
+            return score;
         }
 
         /// <summary>

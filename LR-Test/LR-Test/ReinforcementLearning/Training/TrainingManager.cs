@@ -1,5 +1,4 @@
-﻿using LR_Test.Game;
-using LR_Test.ReinforcementLearning.NeuralNetwork;
+﻿using LR_Test.ReinforcementLearning.NeuralNetwork;
 using LR_Test.ReinforcementLearning.Training.History;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,6 @@ namespace LR_Test.ReinforcementLearning.Training
         private const int TRAINCOUNT = 10;
         private const int DELAY = 100;
         private const int SHOWBESTCOUNT = 50;
-        private Game2048 game;
 
         private List<TrainingHistoryItem> history;
 
@@ -25,7 +23,6 @@ namespace LR_Test.ReinforcementLearning.Training
         public TrainingManager()
         {
             this.history = new List<TrainingHistoryItem>();
-            this.game = new Game2048();
         }
 
         public void StartTraining()
@@ -71,22 +68,7 @@ namespace LR_Test.ReinforcementLearning.Training
 
         public long Train(NeuralNetwork.NeuralNetwork network)
         {
-            game.Start();
-            int lastValue = -1;
-
-            while (game.CanMove())
-            {
-                var result = network.Execute(game.Board.State);
-                var action = Array.IndexOf<double>(result, result.Max());
-                Move move = (Move)action;
-
-                
-
-                game.MakeMove(move);
-
-            }
-
-            return game.Score;
+            return 0;         
         }
     }
 }

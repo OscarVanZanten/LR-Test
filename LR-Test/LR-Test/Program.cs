@@ -8,14 +8,44 @@ namespace LR_Test
 {
     class Program
     {
-     
+
 
         static void Main(string[] args)
         {
             //TestRewardFunction();
             //StartTrainer();
+            const int width = 10;
+            const int height = 10;
+            const int spawnx = 0;
+            const int spawny = 0;
+            //int[] level = new int[width * height]
+            //{
+            //    0,0,0,0,0,0,3,0,0,0,
+            //    0,1,1,0,1,0,0,0,1,1,
+            //    0,1,3,0,1,0,1,0,0,1,
+            //    0,0,0,0,1,0,1,1,0,0,
+            //    0,0,0,0,1,0,0,0,0,0,
+            //    0,0,0,0,0,0,3,0,0,0,
+            //    0,1,1,0,1,0,0,0,1,1,
+            //    0,1,3,0,1,0,1,0,0,1,
+            //    0,0,0,0,1,0,1,1,0,0,
+            //    0,0,0,0,1,0,0,0,0,2
+            //};
+            int[] level = new int[width * height]
+            {
+                0,0,0,0,0,0,0,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                0,0,0,0,2,0,0,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+            };
 
-            Tabulair tabulair = new Tabulair(0.1,0.1, 0.9);
+            QLearningNeuralNetwork tabulair = new QLearningNeuralNetwork(width, height, level, 0, 0, 4, 5, 0.1, 0.3, 0.7);
             int episode = 0;
 
             Console.WriteLine(tabulair);
@@ -24,8 +54,8 @@ namespace LR_Test
             while (true)
             {
 
-                tabulair.TakeTurn();
                 Console.Clear();
+                tabulair.TakeTurn(episode);
                 Console.WriteLine($"Episode: {episode}");
                 Console.WriteLine(tabulair);
 
@@ -39,7 +69,7 @@ namespace LR_Test
             }
         }
 
-    
-        
+
+
     }
 }

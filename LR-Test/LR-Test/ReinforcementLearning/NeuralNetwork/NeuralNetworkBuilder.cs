@@ -6,12 +6,46 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
 {
     public class NeuralNetworkBuilder
     {
+        public static string GenerateEmptyNeuralNetworkData(params int[] format)
+        {
+            Random random = new Random();
+
+            int biasCount = 0;
+            int weightCount = 0;
+
+            for (int i = 0; i < format.Length; i++)
+            {
+                if (i > 0)
+                {
+                    biasCount += format[i];
+                    weightCount += format[i - 1] * format[i];
+                }
+            }
+
+            string result = "";
+
+            for (int i = 0; i < biasCount; i++)
+            {
+                result += 1 + (biasCount - 1 != i ? ";" : "");// random.NextDouble() * 10 - 5 + (biasCount - 1 != i ? ";" : "");
+            }
+
+            result += "|";
+
+
+            for (int i = 0; i < weightCount; i++)
+            {
+                result += random.NextDouble() * 2 - 1 + (weightCount - 1 != i ? ";" : "");
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Generates random data for a neural network with a certain format
         /// </summary>
         /// <param name="format"></param>
         /// <returns></returns>
-        public static string GenerateRandomNeuralNetworkData(int[] format)
+        public static string GenerateRandomNeuralNetworkData(params int[] format)
         {
             Random random = new Random();
 

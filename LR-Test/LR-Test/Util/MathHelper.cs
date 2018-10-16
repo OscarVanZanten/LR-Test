@@ -8,7 +8,7 @@ namespace LR_Test.Util
     {
         public static double Sigmoid(double x)
         {
-            return 2 / (1 + Math.Exp(-2 * x)) - 1;
+            return Math.Pow(Math.E, x) / (1 + Math.Pow(Math.E, x)) ;
         }
 
         public static double Derivative(double x)

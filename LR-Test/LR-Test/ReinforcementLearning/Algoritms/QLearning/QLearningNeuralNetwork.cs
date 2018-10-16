@@ -1,5 +1,4 @@
-﻿using BackProp;
-using LR_Test.ReinforcementLearning.NeuralNetwork;
+﻿using LR_Test.ReinforcementLearning.NeuralNetwork;
 using System;
 using System.Linq;
 

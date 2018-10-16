@@ -9,30 +9,53 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
     {
         public double Value { get; set; }
         public double Bias { get; set; }
-        public List<Connection> In { get; set; }
-        public List<Connection> Out { get; set; }
+        public double[] Weights { get; set; }
+        public double Output { get; internal set; }
+        public double Error { get; set; }
 
-        public Node()
+        private Random random = new Random();
+        private readonly int numberOfInputs;
+
+        public Node(int numberOfInputs, bool randomWeights)
         {
-            this.In = new List<Connection>();
-            this.Out = new List<Connection>();
+            this.numberOfInputs = numberOfInputs;
+            this.Weights = new double[numberOfInputs];
+
+            if (randomWeights)
+            {
+                InitilizeWeights();
+            }
         }
 
-        public void Calculate()
+        public void InitilizeWeights()
         {
-            double sum = Bias;
-
-            foreach (Connection connection in In)
+            for (int j = 0; j < numberOfInputs; j++)
             {
-                sum += connection.Result;
+                Weights[j] = (float)random.NextDouble() - 0.5f;
+            }
+        }
+
+
+        public double FeedForward(double[] inputs)
+        {
+            if (inputs.Length != numberOfInputs)
+            {
+                throw new ArgumentException("Input length does not match");
             }
 
-            double res = MathHelper.Sigmoid(sum);
-           // double res = Math.Max(0, sum);
+            double result = 0;
 
-            Value = res;
+            for (int i = 0; i < numberOfInputs; i++)
+            {
+                result += inputs[i] * Weights[i];
+            }
+
+            result = MathHelper.Sigmoid(result);
+
+            this.Output = result;
+
+            return result;
         }
 
-      
     }
 }

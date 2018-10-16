@@ -39,6 +39,7 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
         private readonly double gamma; // Discount rate
 
         public bool Finished { get; private set; }
+        public bool Succes { get; private set; }
 
         public QLearningTabulair(int width, int height, int[] level, int spawnX, int spawnY, double alpha, double epsilon, double gamma)
         {
@@ -94,6 +95,14 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             if (reward == 1 || reward == -1)
             {
                 Finished = true;
+                if (reward == 1)
+                {
+                    Succes = true;
+                }
+                else
+                {
+                    Succes = false;
+                }
             }
         }
 
@@ -193,6 +202,10 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
 
         private double QValue(int x, int y, int move)
         {
+            if (qtable[x + y * width] == null)
+            {
+                qtable[x + y * width] = new double[4];
+            }
             return qtable[x + y * width][move];
         }
 
@@ -212,12 +225,12 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
         {
             string result = "";
 
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < width + 2; x++)
             {
-                Console.Write("---");
+                Console.Write("-");
             }
             Console.WriteLine();
-                
+
 
             for (int y = 0; y < height; y++)
             {
@@ -227,26 +240,26 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
                 {
                     if (x == agentX && y == agentY)
                     {
-                        Console.Write("[X]");
+                        Console.Write("X");
                     }
                     else
                     {
                         switch (GetTile(x, y))
                         {
                             case TileType.Goal:
-                                Console.Write(" G ");
+                                Console.Write("G");
                                 break;
                             case TileType.Fail:
-                                Console.Write(" F ");
+                                Console.Write("F");
                                 break;
                             case TileType.Empty:
-                                Console.Write("   ");
+                                Console.Write("=");
                                 break;
                             case TileType.Wall:
-                                Console.Write(" W ");
+                                Console.Write("#");
                                 break;
                             default:
-                                Console.Write("   ");
+                                Console.Write("=");
                                 break;
 
                         }
@@ -255,11 +268,12 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
                 Console.WriteLine("|");
             }
 
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < width + 2; x++)
             {
-                Console.Write("---");
+                Console.Write("-");
             }
             Console.WriteLine();
+
 
             return result;
         }

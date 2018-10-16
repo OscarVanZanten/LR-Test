@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
+﻿using BackProp;
 using LR_Test.ReinforcementLearning.NeuralNetwork;
-using LR_Test.Util;
+using System;
+using System.Linq;
 
 namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
 {
@@ -38,7 +36,7 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
         private readonly int goalY = 0;
         private int agentX, agentY; // Agent location
         private readonly int[] level; // level map 
-        private NeuralNetwork.NeuralNetwork neuralNetwork;
+        private MyNeuralNetwork neuralNetwork;
         // private double[][] qtable; // Q value table
 
         private readonly double alpha; // Learning rate
@@ -46,6 +44,7 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
         private readonly double gamma; // Discount rate
 
         public bool Finished { get; private set; }
+        public bool Succes { get; private set; }
 
         public QLearningNeuralNetwork(int width, int height, int[] level, int spawnX, int spawnY, int goalx, int goaly, double alpha, double epsilon, double gamma)
         {
@@ -60,7 +59,24 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             this.goalX = goaly;
             this.goalY = goaly;
 
-            this.neuralNetwork = NeuralNetworkBuilder.GenerateNeuralNetwork(NeuralNetworkBuilder.GenerateEmptyNeuralNetworkData(8, 2, 1), 8,2, 1);
+            this.neuralNetwork = new MyNeuralNetwork(true, 12,12,12, 4);
+            //neuralNetwork.SetWeights(new double[] 
+            //{
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //    0.005, 0.006, 0.007, 0.008, 0.001, 0.002, 0.003, 0.004,0.009, 0.010,
+            //});
             this.alpha = alpha;
             this.epsilon = epsilon;
             this.gamma = gamma;
@@ -82,37 +98,38 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
 
         public void TakeTurn(int episode)
         {
-            int agentx1 = agentX;
-            int agenty1 = agentY;
+            int agentx1 = agentX, agenty1 = agentY;
 
             var move = DetermineMove(agentX, agentY, episode);
 
-            Console.WriteLine($"Move: {move}");
+            var qvals1 = QValues(agentX, agentY);
+            var maxQ1 = HighestQValue(qvals1);
 
             var reward = MakeMove(move);
 
-            var qvalue1 = QValue(agentx1, agenty1, move);
+            var qvals2 = QValues(agentX, agentY);
+            var maxQ2 = HighestQValue(qvals2);
+            //int highestValueIndex = Array.IndexOf<double>(qvals2, maxQ2);
 
-            var qvalue2 = HighestQValue(agentX, agentY);
+            var update = CalculateUpdatedQValue(qvals1[move], maxQ2, (float)reward);
 
-            var updatedQValue = CalculateUpdatedQValue(qvalue1, qvalue2, reward);
-
-            var values = QValuesForLocation(agentX, agentY);
-
-            Console.WriteLine($"Q-Values: {values[0]}, {values[1]}, {values[2]}, {values[3]}");
-            Console.WriteLine($"Values: {qvalue1}, {qvalue2}");
-            SetQValuesForLocationAndMove(updatedQValue);
-            Console.WriteLine($"UpdatedQValue: {updatedQValue}");
+            QValues(agentx1, agenty1);
+            Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
+            qvals1[move] = update;
+           // Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
+            neuralNetwork.BackProp(qvals1);
+            Console.WriteLine($"UpdatedQValue: {update}");
 
             if (reward == 1 || reward == -1)
             {
                 Finished = true;
+                Succes = reward == 1;
             }
         }
 
         private int DetermineMove(int x, int y, int episode)
         {
-            bool randomMove = random.NextDouble() < (epsilon - (episode/100));
+            bool randomMove = random.NextDouble() < (epsilon);
 
             if (randomMove)
             {
@@ -120,7 +137,7 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             }
             else
             {
-                var qvalues = QValuesForLocation(x, y);
+                var qvalues = QValues(x, y);
                 double highestValue = HighestQValue(x, y);
                 int highestValueIndex = Array.IndexOf<double>(qvalues, highestValue);
 
@@ -133,32 +150,43 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             }
         }
 
+        public double Distance(double x1, double y1, double x2, double y2)
+        {
+            return Math.Sqrt(Math.Pow(Math.Abs(x2 - x1), 2) + Math.Pow(Math.Abs(y2 - y1), 2));
+        }
+
         private double MakeMove(int move)
         {
+            var dist = Distance(agentX, agentY, goalX, goalY);
+            bool moved = false;
             switch (move)
             {
                 case 0:
                     if (agentY > 0 && GetTile(agentX, agentY - 1) != TileType.Wall)
                     {
                         agentY--;
+                        moved = true;
                     }
                     break;
                 case 1:
                     if (agentY < height - 1 && GetTile(agentX, agentY + 1) != TileType.Wall)
                     {
                         agentY++;
+                        moved = true;
                     }
                     break;
                 case 2:
                     if (agentX > 0 && GetTile(agentX - 1, agentY) != TileType.Wall)
                     {
                         agentX--;
+                        moved = true;
                     }
                     break;
                 case 3:
                     if (agentX < width - 1 && GetTile(agentX + 1, agentY) != TileType.Wall)
                     {
                         agentX++;
+                        moved = true;
                     }
                     break;
             }
@@ -169,6 +197,10 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
                 case TileType.Fail:
                     return -1;
                 default:
+                    if (!moved)
+                    {
+                        //return -.5;
+                    }
                     return -0.1;
 
             }
@@ -184,37 +216,43 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             return GetTile(agentX, agentY);
         }
 
-        private double CalculateUpdatedQValue(double qvalue1, double qvalue2, double reward)
+        private float CalculateUpdatedQValue(double qvalue1, double qvalue2, float reward)
         {
-            return qvalue1 + alpha * (reward + gamma * qvalue2 - qvalue1);
-        }
-
-        private double[] QValuesForLocation(int x, int y)
-        {
-            double[] qvalues = new double[4];
-
-            for (int move = 0; move < 4; move++)
-            {
-                qvalues[move] = QValue(x, y, move);
-            }
-          
-            return qvalues;
+            return (float)(qvalue1 + alpha * (reward + gamma * qvalue2 - qvalue1));
         }
 
         private double HighestQValue(int x, int y)
         {
-            var qvalues = QValuesForLocation(x, y);
+            var qvalues = QValues(x, y);
             return qvalues.OrderByDescending(q => q).First();
         }
 
-        private double QValue(int x, int y, int move)
+        private double HighestQValue(double[] qvalues)
         {
-            return neuralNetwork.Execute(MathHelper.Sigmoid(x), MathHelper.Sigmoid(y), (move != 0 ? 0 : 1), (move != 1 ? 0 : 1), (move != 2 ? 0 : 1), (move != 3 ? 0 : 1), MathHelper.Sigmoid(goalX), MathHelper.Sigmoid(goalY))[0];
+            return qvalues.OrderByDescending(q => q).First();
         }
 
-        private void SetQValuesForLocationAndMove(double value)
+        private double[] QValues(int x, int y)
         {
-            neuralNetwork.BackPropagation( value);
+            double[] data = new double[level.Length];
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (i == x + y * width)
+                {
+                    data[i] = int.MaxValue;
+                }
+                else
+                {
+                    data[i] = level[i];
+                }
+            }
+
+            return neuralNetwork.FeedForward(data);
+        }
+
+        private void SetQValuesForLocationAndMove(double[] value)
+        {
+
         }
 
         public void Reset()
@@ -228,56 +266,55 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
         {
             string result = "";
 
-            for (int x = 0; x < width +2; x++)
+            for (int x = 0; x < width + 2; x++)
             {
-                Console.Write("-");
+                result +="-";
             }
-            Console.WriteLine();
-
+            result += '\n';
 
             for (int y = 0; y < height; y++)
             {
-                Console.Write("|");
+                result += '|';
 
                 for (int x = 0; x < width; x++)
                 {
                     if (x == agentX && y == agentY)
                     {
-                        Console.Write("X");
+                        result += 'X';
                     }
                     else
                     {
                         switch (GetTile(x, y))
                         {
                             case TileType.Goal:
-                                Console.Write("G");
+                                result += 'G';
                                 break;
                             case TileType.Fail:
-                                Console.Write("F");
+                                result += 'F';
                                 break;
                             case TileType.Empty:
-                                Console.Write("=");
+                                result += '=';
                                 break;
                             case TileType.Wall:
-                                Console.Write("#");
+                                result += '#';
                                 break;
                             default:
-                                Console.Write("=");
+                                result += '=';
                                 break;
 
                         }
                     }
                 }
-                Console.WriteLine("|");
+                result += '|';
+                result += '\n';
             }
 
-            for (int x = 0; x < width+2; x++)
+            for (int x = 0; x < width + 2; x++)
             {
-                Console.Write("-");
+                result +="-";
             }
-            Console.WriteLine();
+            result += '\n';
 
-            Console.WriteLine(neuralNetwork);
 
             return result;
         }

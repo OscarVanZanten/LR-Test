@@ -6,4 +6,8 @@
     <RootNamespace>LR_Test</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="TensorFlowSharp" Version="1.11.0" />
+  </ItemGroup>
+
 </Project>

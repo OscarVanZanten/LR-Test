@@ -31,11 +31,9 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
         private readonly int height;
         private readonly int spawnX = 0;
         private readonly int spawnY = 2;
-        private readonly int goalX = 0;
-        private readonly int goalY = 0;
         private int agentX, agentY; // Agent location
         private readonly int[] level; // level map 
-        private MyNeuralNetwork neuralNetwork;
+        private SimpleNN neuralNetwork;
         // private double[][] qtable; // Q value table
 
         private readonly double alpha; // Learning rate
@@ -45,7 +43,7 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
         public bool Finished { get; private set; }
         public bool Succes { get; private set; }
 
-        public QLearningNeuralNetwork(int width, int height, int[] level, int spawnX, int spawnY, int goalx, int goaly, double alpha, double epsilon, double gamma)
+        public QLearningNeuralNetwork(int width, int height, int[] level, int spawnX, int spawnY, double alpha, double epsilon, double gamma)
         {
 
             this.random = new Random();
@@ -55,10 +53,8 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             this.height = height;
             this.spawnX = spawnX;
             this.spawnY = spawnY;
-            this.goalX = goaly;
-            this.goalY = goaly;
 
-            this.neuralNetwork = new MyNeuralNetwork(true, width * height,256,64, 4);
+            this.neuralNetwork = new SimpleNN( width * height,64,64, 4);
             //neuralNetwork.SetWeights(new double[] 
          
             this.alpha = alpha;
@@ -68,11 +64,11 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             this.agentY = 2;
         }
 
-        public QLearningNeuralNetwork(double alpha, double epsilon, double gamma) : this(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_LEVEL, DEFAULT_SPAWNX, DEFAULT_SPAWNY, DEFAULT_GOALX, DEFAULT_GOALY, alpha, epsilon, gamma)
+        public QLearningNeuralNetwork(double alpha, double epsilon, double gamma) : this(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_LEVEL, DEFAULT_SPAWNX, DEFAULT_SPAWNY, alpha, epsilon, gamma)
         {
         }
 
-        public QLearningNeuralNetwork(int width, int height, int[] level, int spawnX, int spawnY, int goalx, int goaly) : this(width, height, level, spawnX, spawnY, goalx, goaly, DEFAULT_ALPHA, DEFAULT_EPSILON, DEFAULT_GAMMA)
+        public QLearningNeuralNetwork(int width, int height, int[] level, int spawnX, int spawnY, int goalx, int goaly) : this(width, height, level, spawnX, spawnY, DEFAULT_ALPHA, DEFAULT_EPSILON, DEFAULT_GAMMA)
         {
         }
 
@@ -93,16 +89,15 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
 
             var qvals2 = QValues(agentX, agentY);
             var maxQ2 = HighestQValue(qvals2);
-            //int highestValueIndex = Array.IndexOf<double>(qvals2, maxQ2);
 
             var update = CalculateUpdatedQValue(qvals1[move], maxQ2, (float)reward);
 
             QValues(agentx1, agenty1);
-           // Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
+            Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
             qvals1[move] = update;
-           // Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
+            Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
             neuralNetwork.BackProp(qvals1);
-            //Console.WriteLine($"UpdatedQValue: {update}");
+            Console.WriteLine($"UpdatedQValue: {update}");
 
             if (reward == 1 || reward == -1)
             {
@@ -134,14 +129,8 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             }
         }
 
-        public double Distance(double x1, double y1, double x2, double y2)
-        {
-            return Math.Sqrt(Math.Pow(Math.Abs(x2 - x1), 2) + Math.Pow(Math.Abs(y2 - y1), 2));
-        }
-
         private double MakeMove(int move)
         {
-            var dist = Distance(agentX, agentY, goalX, goalY);
             bool moved = false;
             switch (move)
             {
@@ -234,10 +223,7 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             return neuralNetwork.FeedForward(data);
         }
 
-        private void SetQValuesForLocationAndMove(double[] value)
-        {
-
-        }
+      
 
         public void Reset()
         {

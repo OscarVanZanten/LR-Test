@@ -9,7 +9,7 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
     {
         private Random randomGen;
 
-        private readonly double learningrate = .5;
+        private readonly double learningrate = .01;
 
         // Format
         private int[] format;
@@ -65,7 +65,7 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
         {
             if (inputs.Length != outputs[0].Length) { throw new ArgumentException("Length does not match"); }
 
-            outputs[0] = inputs;
+            outputs[0] = (double[])inputs.Clone();
 
             for (int layer = 1; layer < format.Length; layer++)
             {
@@ -82,13 +82,20 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
 
                         sum += added;
                     }
+                    double result = 0;
+                    if (layer == format.Length - 1)
+                    {
+                        result = sum;
+                    } else
+                    {
+                        result = MathHelper.Sigmoid(sum);
+                    }
 
-                    double function = MathHelper.Sigmoid(sum);
-                    outputs[layer][toNode] = function;
+                    outputs[layer][toNode] = result;
                 }
             }
 
-            return outputs[outputs.Length - 1];
+            return (double[])outputs[outputs.Length - 1].Clone();
         }
 
         public void BackProp(params double[] expected)
@@ -100,7 +107,7 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
                 double outputValue = outputs[format.Length - 1][outputError];
                 double expectedValue = expected[outputError];
 
-                double error = outputValue * (1 - outputValue) * (expectedValue - outputValue);
+                double error =  (expectedValue - outputValue);
 
                 errors[format.Length - 1][outputError] = error;
             }
@@ -142,7 +149,6 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
                     }
                 }
             }
-
         }
     }
 }

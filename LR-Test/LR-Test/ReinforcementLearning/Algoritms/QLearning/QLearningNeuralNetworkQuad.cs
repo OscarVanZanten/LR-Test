@@ -31,21 +31,20 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
         private readonly int height;
         private readonly int spawnX = 0;
         private readonly int spawnY = 2;
-        private readonly int goalX = 0;
-        private readonly int goalY = 0;
         private int agentX, agentY; // Agent location
         private readonly int[] level; // level map 
-        private MyNeuralNetwork[] neuralNetworks;
+        private SimpleNN[] neuralNetworks;
         // private double[][] qtable; // Q value table
 
         private readonly double alpha; // Learning rate
         private readonly double epsilon; // Random chance of doing a random move
         private readonly double gamma; // Discount rate
+        private readonly int maxPolicyEpisodes;
 
         public bool Finished { get; private set; }
         public bool Succes { get; private set; }
 
-        public QLearningNeuralNetworkQuad(int width, int height, int[] level, int spawnX, int spawnY, int goalx, int goaly, double alpha, double epsilon, double gamma)
+        public QLearningNeuralNetworkQuad(int width, int height, int[] level, int spawnX, int spawnY, double alpha, double epsilon, double gamma, int maxPolicyEpisodes)
         {
 
             this.random = new Random();
@@ -55,33 +54,33 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             this.height = height;
             this.spawnX = spawnX;
             this.spawnY = spawnY;
-            this.goalX = goaly;
-            this.goalY = goaly;
 
-            this.neuralNetworks = new MyNeuralNetwork[4]
+            this.neuralNetworks = new SimpleNN[4]
             {
-                new MyNeuralNetwork(true, width * height,256,64, 1),
-                new MyNeuralNetwork(true, width * height,256,64, 1),
-                new MyNeuralNetwork(true, width * height,256,64, 1),
-                new MyNeuralNetwork(true, width * height,256,64, 1),
+                new SimpleNN( width * height,64,8, 1),
+                new SimpleNN( width * height,64,8, 1),
+                new SimpleNN( width * height,64,8, 1),
+                new SimpleNN( width * height,64,8, 1),
             };
-           
+
             this.alpha = alpha;
             this.epsilon = epsilon;
             this.gamma = gamma;
+            this.maxPolicyEpisodes = maxPolicyEpisodes;
+
             this.agentX = 0;
             this.agentY = 2;
         }
 
-        public QLearningNeuralNetworkQuad(double alpha, double epsilon, double gamma) : this(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_LEVEL, DEFAULT_SPAWNX, DEFAULT_SPAWNY, DEFAULT_GOALX, DEFAULT_GOALY, alpha, epsilon, gamma)
+        public QLearningNeuralNetworkQuad(double alpha, double epsilon, double gamma, int maxPolicyEpisodes) : this(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_LEVEL, DEFAULT_SPAWNX, DEFAULT_SPAWNY, alpha, epsilon, gamma, maxPolicyEpisodes)
         {
         }
 
-        public QLearningNeuralNetworkQuad(int width, int height, int[] level, int spawnX, int spawnY, int goalx, int goaly) : this(width, height, level, spawnX, spawnY, goalx, goaly, DEFAULT_ALPHA, DEFAULT_EPSILON, DEFAULT_GAMMA)
+        public QLearningNeuralNetworkQuad(int width, int height, int[] level, int spawnX, int spawnY, int goalx, int goaly) : this(width, height, level, spawnX, spawnY, DEFAULT_ALPHA, DEFAULT_EPSILON, DEFAULT_GAMMA, 10000)
         {
         }
 
-        public QLearningNeuralNetworkQuad() : this(DEFAULT_ALPHA, DEFAULT_EPSILON, DEFAULT_GAMMA)
+        public QLearningNeuralNetworkQuad() : this(DEFAULT_ALPHA, DEFAULT_EPSILON, DEFAULT_GAMMA, 10000)
         {
         }
 
@@ -103,11 +102,11 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             var update = CalculateUpdatedQValue(qvals1[move], maxQ2, (float)reward);
 
             QValues(agentx1, agenty1);
-          // Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
+            //  Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
             qvals1[move] = update;
-           // Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
+            //Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
             neuralNetworks[move].BackProp(qvals1[move]);
-          //  Console.WriteLine($"UpdatedQValue: {update}");
+            //Console.WriteLine($"UpdatedQValue: {update}");
 
             if (reward == 1 || reward == -1)
             {
@@ -118,7 +117,11 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
 
         private int DetermineMove(int x, int y, int episode)
         {
-            bool randomMove = random.NextDouble() < (epsilon);
+            double epsilonDiscount = episode > 0 ? (episode/(maxPolicyEpisodes*1.0) ) * epsilon : 0;
+            double finalEpsilon = epsilon - (epsilonDiscount > epsilon ? epsilon : epsilonDiscount);
+            Console.WriteLine($"{epsilon} {epsilonDiscount} {finalEpsilon}");
+
+            bool randomMove = random.NextDouble() < (finalEpsilon);
 
             if (randomMove)
             {
@@ -139,14 +142,8 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             }
         }
 
-        public double Distance(double x1, double y1, double x2, double y2)
-        {
-            return Math.Sqrt(Math.Pow(Math.Abs(x2 - x1), 2) + Math.Pow(Math.Abs(y2 - y1), 2));
-        }
-
         private double MakeMove(int move)
         {
-            var dist = Distance(agentX, agentY, goalX, goalY);
             bool moved = false;
             switch (move)
             {
@@ -158,23 +155,23 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
                     }
                     break;
                 case 1:
+                    if (agentX < width - 1 && GetTile(agentX + 1, agentY) != TileType.Wall)
+                    {
+                        agentX++;
+                        moved = true;
+                    }
+                    break;
+                case 2:
                     if (agentY < height - 1 && GetTile(agentX, agentY + 1) != TileType.Wall)
                     {
                         agentY++;
                         moved = true;
                     }
                     break;
-                case 2:
+                case 3:
                     if (agentX > 0 && GetTile(agentX - 1, agentY) != TileType.Wall)
                     {
                         agentX--;
-                        moved = true;
-                    }
-                    break;
-                case 3:
-                    if (agentX < width - 1 && GetTile(agentX + 1, agentY) != TileType.Wall)
-                    {
-                        agentX++;
                         moved = true;
                     }
                     break;
@@ -263,7 +260,7 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
 
             for (int x = 0; x < width + 2; x++)
             {
-                result +="-";
+                result += "-";
             }
             result += '\n';
 
@@ -306,7 +303,7 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
 
             for (int x = 0; x < width + 2; x++)
             {
-                result +="-";
+                result += "-";
             }
 
             return result;

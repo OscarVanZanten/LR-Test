@@ -4,6 +4,7 @@ using System.Threading;
 using System.Linq;
 using LR_Test.ReinforcementLearning.Algoritms.QLearning;
 using TensorFlow;
+using System.Collections.Generic;
 
 namespace LR_Test
 {
@@ -13,8 +14,8 @@ namespace LR_Test
 
         static void Main(string[] args)
         {
-             XORTest();
-            //RunGame();
+            // XORTest();
+            RunGame();
 
             //TensorFlow();
         }
@@ -22,11 +23,11 @@ namespace LR_Test
         public static void XORTest()
         {
             //MyNeuralNetwork network = new MyNeuralNetwork(true, 2, 3, 1);
-            SimpleNN network = new SimpleNN( 2, 3, 1);
+            SimpleNN network = new SimpleNN(2, 3, 1);
             while (true)
             {
                 //Thread.Sleep(5);
-              //  Console.Clear();
+                //  Console.Clear();
 
                 var result = network.FeedForward(1f, 1f);
                 Console.WriteLine($"(1,1): result={result[0]} expected=0");
@@ -75,6 +76,7 @@ namespace LR_Test
         static int episode = 0;
         static int succeses = 0;
         static int fails = 0;
+        static int currentSuccesScale = 1000;
         public static void RunGame()
         {
             //TestRewardFunction();
@@ -106,32 +108,40 @@ namespace LR_Test
             //    0,0,0,0,0,0,0,0,0,0,
             //};
 
-            // QLearningNeuralNetwork tabulair = new QLearningNeuralNetwork(width, height, level, 0, 0, 9, 9, 0.5, 0.3, 0.7);
-            QLearningNeuralNetworkQuad tabulair = new QLearningNeuralNetworkQuad(width,height,level,spawnx, spawny, 9,4, .2, .1, .8);
+            //  QLearningNeuralNetwork tabulair = new QLearningNeuralNetwork(width, height, level, 0, 0, 9, 9, 0.5, 0.3, 0.7);
+            // QLearningNeuralNetwork tabulair = new QLearningNeuralNetwork(width, height, level, 0 ,0 ,1, 0.3, 0.7);
+            //QLearningNeuralNetworkQuad tabulair = new QLearningNeuralNetworkQuad(1, .1, .8);
+            QLearningNeuralNetworkQuad tabulair = new QLearningNeuralNetworkQuad(width, height, level, 0, 0, 1, .3, .8, 10000);
 
+            Queue<bool> result = new Queue<bool>();
 
-            Console.WriteLine(tabulair);
             Thread.Sleep(100);
 
             while (true)
             {
+                //Console.Clear();
                 tabulair.TakeTurn(episode);
 
-                //  Thread.Sleep(20);
+                // Thread.Sleep(20);
+                Console.WriteLine(tabulair);
                 if (tabulair.Finished)
                 {
-                    Console.Clear();
-                    Console.WriteLine(tabulair);
 
+                    result.Enqueue(tabulair.Succes);
+                    while (result.Count > currentSuccesScale) { result.Dequeue(); }
                     episode++;
                     if (tabulair.Succes) { succeses++; }
                     else { fails++; }
                     //Thread.Sleep(1000);
 
-                    Console.WriteLine($"Episode: {episode}, {succeses}/{fails}");
-                    Console.WriteLine(tabulair.Succes ? "Succes" : "Fail");
+
                     tabulair.Reset();
                 }
+                int count = result.Where(v => v == true).Count();
+                
+                int currentmax = Math.Min(episode, currentSuccesScale);
+                double percentage = (currentmax > 0 ? ((count / (currentmax * 1.0)) * 100.0) : 0);
+                Console.WriteLine($"Episode: {episode}, {succeses}/{fails} {percentage} {(tabulair.Finished ? tabulair.Succes ? "Succes" : "Fail" : "")}");
             }
         }
     }

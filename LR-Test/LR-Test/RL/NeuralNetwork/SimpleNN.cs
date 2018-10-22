@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LR_Test.ReinforcementLearning.NeuralNetwork
+namespace LR_Test.RL.NeuralNetwork
 {
     public class SimpleNN
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LR_Test.ReinforcementLearning
+namespace LR_Test.RL
 {
     public enum TileType { Empty, Wall, Goal, Fail }
 

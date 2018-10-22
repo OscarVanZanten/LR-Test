@@ -1,8 +1,9 @@
-﻿using LR_Test.ReinforcementLearning.NeuralNetwork;
-using System;
+﻿using System;
 using System.Linq;
 
-namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
+using LR_Test.RL.NeuralNetwork;
+
+namespace LR_Test.RL.Algoritms.QLearning
 {
 
     public class QLearningNeuralNetworkQuad : QValueGame
@@ -28,19 +29,43 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
             this.maxPolicyEpisodes = 10000;
             this.neuralNetworks = new SimpleNN[4]
             {
-                new SimpleNN( width * height,64,8, 1),
-                new SimpleNN( width * height,64,8, 1),
-                new SimpleNN( width * height,64,8, 1),
-                new SimpleNN( width * height,64,8, 1),
+                new SimpleNN(.5,  width * height,64,8, 1),
+                new SimpleNN(.5,  width * height,64,8, 1),
+                new SimpleNN( .5, width * height,64,8, 1),
+                new SimpleNN(.5,  width * height,64,8, 1),
             };
+        }
+
+        public override void TakeTurn(int episode)
+        {
+            int agentx1 = agentX, agenty1 = agentY;
+
+            var move = DetermineMove(agentX, agentY, episode);
+
+            var qvals1 = QValues(agentX, agentY);
+            var maxQ1 = HighestQValues(qvals1);
+
+            var reward = MakeMove(move);
+
+            var qvals2 = QValues(agentX, agentY);
+            var maxQ2 = HighestQValues(qvals2);
+
+            var update = CalculateUpdatedQValue(qvals1[move], maxQ2, (float)reward);
+
+            QValues(agentx1, agenty1);
+            Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
+            qvals1[move] = update;
+            Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
+            SetQValues(agentx1, agenty1, qvals1);
+            Console.WriteLine($"UpdatedQValue: {update}");
+
+            CheckGameState(reward);
         }
 
         protected override int DetermineMove(int x, int y, int episode)
         {
             double epsilonDiscount = episode > 0 ? (episode / (maxPolicyEpisodes * 1.0)) * epsilon : 0;
             double finalEpsilon = epsilon - (epsilonDiscount > epsilon ? epsilon : epsilonDiscount);
-            Console.WriteLine($"{epsilon} {epsilonDiscount} {finalEpsilon}");
-
             bool randomMove = random.NextDouble() < (finalEpsilon);
 
             if (randomMove)
@@ -60,11 +85,6 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
 
                 return highestValueIndex;
             }
-        }
-
-        protected override double CalculateUpdatedQValue(double qvalue1, double qvalue2, double reward)
-        {
-            return (qvalue1 + alpha * (reward + gamma * qvalue2 - qvalue1));
         }
 
         protected override double[] QValues(int x, int y)

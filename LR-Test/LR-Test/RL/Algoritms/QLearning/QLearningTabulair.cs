@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
+namespace LR_Test.RL.Algoritms.QLearning
 {
     public class QLearningTabulair : QValueGame
     {
@@ -17,6 +17,32 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
         public QLearningTabulair(double alpha, double epsilon, double gamma) : base(alpha, epsilon, gamma)
         {
             this.qtable = new double[width * height][];
+        }
+
+        public override void TakeTurn(int episode)
+        {
+            int agentx1 = agentX, agenty1 = agentY;
+
+            var move = DetermineMove(agentX, agentY, episode);
+
+            var qvals1 = QValues(agentX, agentY);
+            var maxQ1 = HighestQValues(qvals1);
+
+            var reward = MakeMove(move);
+
+            var qvals2 = QValues(agentX, agentY);
+            var maxQ2 = HighestQValues(qvals2);
+
+            var update = CalculateUpdatedQValue(qvals1[move], maxQ2, (float)reward);
+
+            QValues(agentx1, agenty1);
+            Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
+            qvals1[move] = update;
+            Console.WriteLine($"Q-Values: {qvals1[0]}, {qvals1[1]}, {qvals1[2]}, {qvals1[3]}");
+            SetQValues(agentx1, agenty1, qvals1);
+            Console.WriteLine($"UpdatedQValue: {update}");
+
+            CheckGameState(reward);
         }
 
         protected override int DetermineMove(int x, int y, int episode)
@@ -40,11 +66,6 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
 
                 return highestValueIndex;
             }
-        }
-
-        protected override double CalculateUpdatedQValue(double qvalue1, double qvalue2, double reward)
-        {
-            return qvalue1 + alpha * (reward + gamma * qvalue2 - qvalue1);
         }
 
         protected override double[] QValues(int x, int y)

@@ -3,9 +3,10 @@ using System.Threading;
 using System.Linq;
 using System.Collections.Generic;
 
-using LR_Test.ReinforcementLearning;
-using LR_Test.ReinforcementLearning.NeuralNetwork;
-using LR_Test.ReinforcementLearning.Algoritms.QLearning;
+using LR_Test.RL;
+using LR_Test.RL.NeuralNetwork;
+using LR_Test.RL.Algoritms.SARSA;
+using LR_Test.RL.Algoritms.QLearning;
 
 namespace LR_Test
 {
@@ -13,9 +14,9 @@ namespace LR_Test
     {
         private const string XORTestName = "XOR BackPropagation test";
 
-        private static double alpha = .3;
-        private static double epsilon = .2;
-        private static double gamma = .8;
+        private static readonly double alpha = .3;
+        private static readonly double epsilon = .2;
+        private static readonly double gamma = .8;
 
         private static int fails = 0;
         private static int episode = 0;
@@ -42,6 +43,8 @@ namespace LR_Test
                 {"QLearning Tabulair", new QLearningTabulair(alpha,epsilon,gamma) },
                 {"QLearning NeuralNetwork", new QLearningNeuralNetwork(alpha,epsilon,gamma) },
                 {"QLearning NeuralNetwork v2", new QLearningNeuralNetworkQuad(alpha,epsilon,gamma) },
+                {"SARSA Tabulair", new SARSATabulair(alpha,epsilon,gamma) },
+                {"SARSA NeuralNetwork", new SARSANeuralNetwork(alpha,epsilon,gamma) },
             };
         }
 
@@ -157,7 +160,8 @@ namespace LR_Test
                 int currentmax = Math.Min(episode, currentSuccesScale);
                 double percentage = (currentmax > 0 ? ((count / (currentmax * 1.0)) * 100.0) : 0);
                 Console.WriteLine($"Episode: {episode}, {succeses}/{fails} {percentage} {(game.Finished ? game.Succes ? "Succes" : "Fail" : "")}");
-                Thread.Sleep(10);
+
+                Thread.Sleep(50);
             }
         }
     }

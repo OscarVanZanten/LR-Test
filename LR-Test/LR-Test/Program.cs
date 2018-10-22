@@ -5,6 +5,7 @@ using System.Linq;
 using LR_Test.ReinforcementLearning.Algoritms.QLearning;
 using TensorFlow;
 using System.Collections.Generic;
+using LR_Test.ReinforcementLearning;
 
 namespace LR_Test
 {
@@ -76,42 +77,40 @@ namespace LR_Test
         static int episode = 0;
         static int succeses = 0;
         static int fails = 0;
-        static int currentSuccesScale = 1000;
+        static readonly int currentSuccesScale = 1000;
         public static void RunGame()
         {
             //TestRewardFunction();
             //StartTrainer();
             const int width = 10;
-            const int height = 5;
+            const int height = 10;
             const int spawnx = 0;
             const int spawny = 0;
-            int[] level = new int[width * height]
-            {
-                0,0,0,0,0,0,1,0,0,3,
-                0,1,1,0,1,0,0,0,1,1,
-                0,1,3,0,1,0,1,0,0,3,
-                0,1,1,0,0,0,1,1,0,0,
-                0,0,0,0,1,0,0,0,0,2,
-
-            };
             //int[] level = new int[width * height]
             //{
-            //    0,0,0,0,0,0,0,0,0,0,
-            //    0,0,0,0,0,0,0,0,0,0,
-            //    0,0,0,0,0,0,0,0,0,0,
-            //    0,0,0,0,0,0,0,0,0,0,
-            //    0,0,0,0,0,2,0,0,0,0,
-            //    0,0,0,0,0,0,0,0,0,0,
-            //    0,0,0,0,0,0,0,0,0,0,
-            //    0,0,0,0,0,0,0,0,0,0,
-            //    0,0,0,0,0,0,0,0,0,0,
-            //    0,0,0,0,0,0,0,0,0,0,
-            //};
+            //    0,0,0,0,0,0,1,0,0,3,
+            //    0,1,1,0,1,0,0,0,1,1,
+            //    0,1,3,0,1,0,1,0,0,3,
+            //    0,1,1,0,0,0,1,1,0,0,
+            //    0,0,0,0,1,0,0,0,0,2,
 
-            //  QLearningNeuralNetwork tabulair = new QLearningNeuralNetwork(width, height, level, 0, 0, 9, 9, 0.5, 0.3, 0.7);
-            // QLearningNeuralNetwork tabulair = new QLearningNeuralNetwork(width, height, level, 0 ,0 ,1, 0.3, 0.7);
+            //};
+            int[] level = new int[width * height]
+            {
+                0,0,0,0,0,0,0,0,0,3,
+                0,0,0,0,0,0,0,0,0,0,
+                0,0,0,3,0,0,0,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                0,3,0,0,0,2,0,3,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                0,3,0,0,0,0,3,0,0,0,
+                0,0,0,0,0,0,0,0,0,0,
+                3,0,0,0,0,0,0,0,0,3,
+            };
+
+             RLGame tabulair = new QLearningTabulair(1, 0.3, 0.7);
             //QLearningNeuralNetworkQuad tabulair = new QLearningNeuralNetworkQuad(1, .1, .8);
-            QLearningNeuralNetworkQuad tabulair = new QLearningNeuralNetworkQuad(width, height, level, 0, 0, 1, .3, .8, 10000);
 
             Queue<bool> result = new Queue<bool>();
 

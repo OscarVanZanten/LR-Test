@@ -29,6 +29,11 @@ namespace LR_Test.ReinforcementLearning.NeuralNetwork
             SetupNN();
         }
 
+        public SimpleNN(double learningrate, params int[] format) : this(format)
+        {
+            this.learningrate = learningrate;
+        }
+
         private void SetupNN()
         {
             //Setup Node values

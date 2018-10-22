@@ -13,6 +13,7 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
 
         public QLearningNeuralNetworkQuad(int width, int height, int[] level, int spawnX, int spawnY, double alpha, double epsilon, double gamma, int maxPolicyEpisodes) : base(width, height, level, spawnX, spawnY, alpha, epsilon, gamma)
         {
+            this.maxPolicyEpisodes = 10000;
             this.neuralNetworks = new SimpleNN[4]
             {
                 new SimpleNN( width * height,64,8, 1),
@@ -24,18 +25,19 @@ namespace LR_Test.ReinforcementLearning.Algoritms.QLearning
 
         public QLearningNeuralNetworkQuad(double alpha, double epsilon, double gamma) : base(alpha, epsilon, gamma)
         {
+            this.maxPolicyEpisodes = 10000;
             this.neuralNetworks = new SimpleNN[4]
-           {
+            {
                 new SimpleNN( width * height,64,8, 1),
                 new SimpleNN( width * height,64,8, 1),
                 new SimpleNN( width * height,64,8, 1),
                 new SimpleNN( width * height,64,8, 1),
-           };
+            };
         }
 
         protected override int DetermineMove(int x, int y, int episode)
         {
-            double epsilonDiscount = episode > 0 ? (episode/(maxPolicyEpisodes*1.0) ) * epsilon : 0;
+            double epsilonDiscount = episode > 0 ? (episode / (maxPolicyEpisodes * 1.0)) * epsilon : 0;
             double finalEpsilon = epsilon - (epsilonDiscount > epsilon ? epsilon : epsilonDiscount);
             Console.WriteLine($"{epsilon} {epsilonDiscount} {finalEpsilon}");
 

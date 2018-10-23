@@ -11,9 +11,8 @@ namespace LR_Test.RL.Algoritms
 
         public QValueGame(double alpha, double epsilon, double gamma) : base(alpha, epsilon, gamma) { }
 
-       
-
         protected abstract double[] QValues(int x, int y);
+
         protected abstract void SetQValues(int x, int y, double[] values);
 
         protected double HighestQValues(int x, int y)
@@ -27,11 +26,9 @@ namespace LR_Test.RL.Algoritms
             return qvalues.OrderByDescending(q => q).First();
         }
 
-
         protected double CalculateUpdatedQValue(double qvalue1, double qvalue2, double reward)
         {
             return qvalue1 + alpha * (reward + gamma * qvalue2 - qvalue1);
         }
-
     }
 }

@@ -6,4 +6,9 @@
     <RootNamespace>LR_Test</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="RL\Algoritms\Monte Carlo\" />
+    <Folder Include="RL\Algoritms\Temporal Difference\" />
+  </ItemGroup>
+
 </Project>

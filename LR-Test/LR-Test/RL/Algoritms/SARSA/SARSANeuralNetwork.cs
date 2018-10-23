@@ -88,7 +88,7 @@ namespace LR_Test.RL.Algoritms.SARSA
 
         protected override void SetQValues(int x, int y, double[] values)
         {
-            neuralNetwork.BackProp(values);
+            neuralNetwork.BackPropagate(values);
         }
     }
 }

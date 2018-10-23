@@ -68,8 +68,6 @@ namespace LR_Test.RL.Algoritms.SARSA
             }
         }
 
-       
-
         protected override double[] QValues(int x, int y)
         {
             if (qtable[x + y * width] == null)

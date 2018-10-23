@@ -44,6 +44,7 @@ namespace LR_Test.RL.Algoritms.QLearning
 
             CheckGameState(reward);
         }
+
         protected override int DetermineMove(int x, int y, int episode)
         {
             bool randomMove = random.NextDouble() < (epsilon);
@@ -87,7 +88,7 @@ namespace LR_Test.RL.Algoritms.QLearning
 
         protected override void SetQValues(int x, int y, double[] values)
         {
-            neuralNetwork.BackProp(values);
+            neuralNetwork.BackPropagate(values);
         }
     }
 }

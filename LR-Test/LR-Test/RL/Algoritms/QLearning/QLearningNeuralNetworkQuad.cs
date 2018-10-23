@@ -115,7 +115,7 @@ namespace LR_Test.RL.Algoritms.QLearning
         {
             for (int move = 0; move < 4; move++)
             {
-                neuralNetworks[move].BackProp(values[move]);
+                neuralNetworks[move].BackPropagate(values[move]);
             }
         }
     }

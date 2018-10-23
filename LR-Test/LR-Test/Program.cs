@@ -102,19 +102,19 @@ namespace LR_Test
 
                 var result = network.FeedForward(1f, 1f);
                 Console.WriteLine($"(1,1): result={result[0]} expected=0");
-                network.BackProp(0);
+                network.BackPropagate(0);
 
                 result = network.FeedForward(0f, 1f);
                 Console.WriteLine($"(0,1): result={result[0]} expected=1");
-                network.BackProp(1);
+                network.BackPropagate(1);
 
                 result = network.FeedForward(1f, 0f);
                 Console.WriteLine($"(1,0): result={result[0]} expected=1");
-                network.BackProp(1);
+                network.BackPropagate(1);
 
                 result = network.FeedForward(0, 0);
                 Console.WriteLine($"(0,0): result={result[0]} expected=0");
-                network.BackProp(0);
+                network.BackPropagate(0);
 
                 Console.WriteLine();
             }

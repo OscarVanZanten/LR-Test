@@ -7,6 +7,7 @@ using LR_Test.RL;
 using LR_Test.RL.NeuralNetwork;
 using LR_Test.RL.Algoritms.SARSA;
 using LR_Test.RL.Algoritms.QLearning;
+using LR_Test.RL.Algoritms.Temporal_Difference;
 
 namespace LR_Test
 {
@@ -41,10 +42,12 @@ namespace LR_Test
             methodes = new Dictionary<string, RLGame>()
             {
                 {"QLearning Tabulair", new QLearningTabulair(alpha,epsilon,gamma) },
-                {"QLearning NeuralNetwork", new QLearningNeuralNetwork(alpha,epsilon,gamma) },
-                {"QLearning NeuralNetwork v2", new QLearningNeuralNetworkQuad(alpha,epsilon,gamma) },
+                {"QLearning NeuralNetwork", new QLearningNeuralNetwork(1,epsilon,gamma) },
+                {"QLearning NeuralNetwork v2", new QLearningNeuralNetworkQuad(1,epsilon,gamma) },
                 {"SARSA Tabulair", new SARSATabulair(alpha,epsilon,gamma) },
-                {"SARSA NeuralNetwork", new SARSANeuralNetwork(alpha,epsilon,gamma) },
+                {"SARSA NeuralNetwork", new SARSANeuralNetwork(1,epsilon,gamma) },
+                {"Temporal Difference Tabulair", new TemporalDifferenceTabulair(alpha,epsilon,gamma) },
+                {"Temporal Difference NeuralNetwork", new TemporalDifferenceNeuralNetwork(1,epsilon,gamma) },
             };
         }
 

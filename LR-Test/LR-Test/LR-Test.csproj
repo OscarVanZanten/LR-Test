@@ -6,8 +6,4 @@
     <RootNamespace>LR_Test</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="RL\Algoritms\Monte Carlo\" />
-  </ItemGroup>
-
 </Project>

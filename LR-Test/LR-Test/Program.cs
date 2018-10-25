@@ -8,6 +8,7 @@ using LR_Test.RL.NeuralNetwork;
 using LR_Test.RL.Algoritms.SARSA;
 using LR_Test.RL.Algoritms.QLearning;
 using LR_Test.RL.Algoritms.Temporal_Difference;
+using LR_Test.RL.Algoritms.Monte_Carlo;
 
 namespace LR_Test
 {
@@ -19,11 +20,9 @@ namespace LR_Test
         private static readonly double epsilon = .2;
         private static readonly double gamma = .8;
 
-        private static int fails = 0;
-        private static int episode = 0;
-        private static int succeses = 0;
+       
         private static Dictionary<string, RLGame> methodes;
-        private static readonly int currentSuccesScale = 1000;
+     
 
         static void Main(string[] args)
         {
@@ -48,6 +47,7 @@ namespace LR_Test
                 {"SARSA NeuralNetwork", new SARSANeuralNetwork(1,epsilon,gamma) },
                 {"Temporal Difference Tabulair", new TemporalDifferenceTabulair(alpha,epsilon,gamma) },
                 {"Temporal Difference NeuralNetwork", new TemporalDifferenceNeuralNetwork(1,epsilon,gamma) },
+                {"Monte Carlo Prediction Tabulair", new MonteCarloFistVisit(alpha,epsilon,gamma) },
             };
         }
 
@@ -90,7 +90,7 @@ namespace LR_Test
 
             if (index <= methodes.Count)
             {
-                RunGame(methodes.ElementAt(index - 1).Value);
+                methodes.ElementAt(index - 1).Value.Run();
             }
         }
 
@@ -120,51 +120,6 @@ namespace LR_Test
                 network.BackPropagate(0);
 
                 Console.WriteLine();
-            }
-        }
-
-        public static void RunGame(RLGame game)
-        {
-            Queue<bool> result = new Queue<bool>();
-
-            Thread.Sleep(100);
-
-            while (true)
-            {
-                Console.Clear();
-                game.TakeTurn(episode);
-
-                Console.WriteLine(game);
-
-                if (game.Finished)
-                {
-                    episode++;
-                    result.Enqueue(game.Succes);
-
-                    while (result.Count > currentSuccesScale)
-                    {
-                        result.Dequeue();
-                    }
-
-                    if (game.Succes)
-                    {
-                        succeses++;
-                    }
-                    else
-                    {
-                        fails++;
-                    }
-
-                    //Thread.Sleep(1000);
-                    game.Reset();
-                }
-                int count = result.Where(v => v == true).Count();
-
-                int currentmax = Math.Min(episode, currentSuccesScale);
-                double percentage = (currentmax > 0 ? ((count / (currentmax * 1.0)) * 100.0) : 0);
-                Console.WriteLine($"Episode: {episode}, {succeses}/{fails} {percentage} {(game.Finished ? game.Succes ? "Succes" : "Fail" : "")}");
-
-                Thread.Sleep(50);
             }
         }
     }

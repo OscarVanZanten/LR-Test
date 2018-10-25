@@ -17,7 +17,7 @@ namespace LR_Test.RL.Algoritms
 
         protected double CalculateUpdatedValue(double value1, double value2, double reward)
         {
-            return (1- alpha) *value1 + alpha * (reward + gamma * value2);
+            return value1 + alpha * (reward + gamma * value2 - value1);
         }
     }
 }

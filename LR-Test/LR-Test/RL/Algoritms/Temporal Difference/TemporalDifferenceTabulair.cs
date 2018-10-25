@@ -10,14 +10,17 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
     public class TemporalDifferenceTabulair : ValueGame
     {
         private readonly double[] vtable;
+        private readonly int maxPolicyEpisodes;
 
         public TemporalDifferenceTabulair(double alpha, double epsilon, double gamma) : base(alpha, epsilon, gamma)
         {
+            this.maxPolicyEpisodes = 10000;
             this.vtable = new double[width * height];
         }
 
         public TemporalDifferenceTabulair(int width, int height, int[] level, int spawnX, int spawnY, double alpha, double epsilon, double gamma) : base(width, height, level, spawnX, spawnY, alpha, epsilon, gamma)
         {
+            this.maxPolicyEpisodes = 10000;
             this.vtable = new double[width * height];
         }
 
@@ -34,15 +37,6 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
 
             var update = CalculateUpdatedValue(value1, value2, reward);
 
-            Value(agentx1, agenty1);
-            var valueNorth = Value(agentx1, agenty1 - 1);
-            var valueSouth = Value(agentx1, agenty1 + 1);
-            var valueWest = Value(agentx1 - 1, agenty1);
-            var valueEast = Value(agentx1 + 1, agenty1);
-
-            //Console.WriteLine($"Values: {valueNorth} {valueSouth} {valueWest} {valueEast}");
-            //Console.WriteLine($"Values: {value1}");
-            //Console.WriteLine($"Values: {update}");
             SetValue(agentx1, agenty1, update);
 
             CheckGameState(reward);
@@ -50,7 +44,10 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
 
         protected override int DetermineMove(int x, int y, int episode)
         {
-            bool randomMove = random.NextDouble() < epsilon;
+            double epsilonDiscount = episode > 0 ? (episode / (maxPolicyEpisodes * 1.0)) * epsilon : 0;
+            double finalEpsilon = epsilon - (epsilonDiscount > epsilon ? epsilon : epsilonDiscount);
+            bool randomMove = random.NextDouble() < (finalEpsilon);
+            Console.WriteLine($"{finalEpsilon}");
 
             var values = new double[]
                {
@@ -99,6 +96,22 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
         protected override void SetValue(int x, int y, double value)
         {
             vtable[x + y * width] = value;
+        }
+
+        public override string ToString()
+        {
+            string result = base.ToString() + '\n' + '\n';
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    result += $" {vtable[x + y * width].ToString("G3")}";
+                }
+                result += '\n';
+            }
+
+            return result;
         }
     }
 }

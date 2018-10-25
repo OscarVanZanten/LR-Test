@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace LR_Test.RL
 {
@@ -38,6 +40,11 @@ namespace LR_Test.RL
         public bool Finished { get; protected set; }
         public bool Succes { get; protected set; }
 
+        protected static int fails = 0;
+        protected static int episode = 0;
+        protected static int succeses = 0;
+        protected static readonly int currentSuccesScale = 1000;
+
         public RLGame(int width, int height, int[] level, int spawnX, int spawnY, double alpha, double epsilon, double gamma)
         {
             this.random = new Random();
@@ -61,6 +68,43 @@ namespace LR_Test.RL
 
         public RLGame() : this(DEFAULT_ALPHA, DEFAULT_EPSILON, DEFAULT_GAMMA)
         {
+        }
+
+        public virtual void Run()
+        {
+            Queue<bool> result = new Queue<bool>();
+
+            Thread.Sleep(100);
+
+            while (true)
+            {
+                Console.Clear();
+                TakeTurn(episode);
+
+                Console.WriteLine(this);
+
+                if (Finished)
+                {
+                    episode++;
+                    result.Enqueue(Succes);
+
+                    while (result.Count > currentSuccesScale)
+                    {
+                        result.Dequeue();
+                    }
+
+                    succeses += Succes ? 1 : 0;
+                    fails += Succes ? 0 : 1;
+                    Reset();
+                }
+
+                int count = result.Where(v => v == true).Count();
+                int currentmax = Math.Min(episode, currentSuccesScale);
+                double percentage = (currentmax > 0 ? ((count / (currentmax * 1.0)) * 100.0) : 0);
+                Console.WriteLine($"Episode: {episode}, {succeses}/{fails} {percentage} {(Finished ? Succes ? "Succes" : "Fail" : "")}");
+
+               // Thread.Sleep(50);
+            }
         }
 
         public abstract void TakeTurn(int episode);

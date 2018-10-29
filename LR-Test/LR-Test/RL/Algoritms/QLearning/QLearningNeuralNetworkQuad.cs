@@ -11,28 +11,29 @@ namespace LR_Test.RL.Algoritms.QLearning
         private SimpleNN[] neuralNetworks;
 
         private readonly int maxPolicyEpisodes;
+        private static double learningRate = .7;
 
         public QLearningNeuralNetworkQuad(int width, int height, int[] level, int spawnX, int spawnY, double alpha, double epsilon, double gamma, int maxPolicyEpisodes) : base(width, height, level, spawnX, spawnY, alpha, epsilon, gamma)
         {
-            this.maxPolicyEpisodes = 10000;
+            this.maxPolicyEpisodes = 1000;
             this.neuralNetworks = new SimpleNN[4]
             {
-                new SimpleNN( width * height,64,8, 1),
-                new SimpleNN( width * height,64,8, 1),
-                new SimpleNN( width * height,64,8, 1),
-                new SimpleNN( width * height,64,8, 1),
+                new SimpleNN(learningRate, width * height,64,8, 1),
+                new SimpleNN(learningRate, width * height,64,8, 1),
+                new SimpleNN(learningRate, width * height,64,8, 1),
+                new SimpleNN(learningRate, width * height,64,8, 1),
             };
         }
 
         public QLearningNeuralNetworkQuad(double alpha, double epsilon, double gamma) : base(alpha, epsilon, gamma)
         {
-            this.maxPolicyEpisodes = 10000;
+            this.maxPolicyEpisodes = 1000;
             this.neuralNetworks = new SimpleNN[4]
             {
-                new SimpleNN(.5,  width * height,64,8, 1),
-                new SimpleNN(.5,  width * height,64,8, 1),
-                new SimpleNN( .5, width * height,64,8, 1),
-                new SimpleNN(.5,  width * height,64,8, 1),
+                new SimpleNN(learningRate,  width * height,64,8, 1),
+                new SimpleNN(learningRate,  width * height,64,8, 1),
+                new SimpleNN(learningRate, width * height,64,8, 1),
+                new SimpleNN(learningRate,  width * height,64,8, 1),
             };
         }
 

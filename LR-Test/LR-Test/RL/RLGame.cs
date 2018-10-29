@@ -79,7 +79,6 @@ namespace LR_Test.RL
             while (true)
             {
                 Console.Clear();
-                TakeTurn(episode);
 
                 Console.WriteLine(this);
 
@@ -102,8 +101,9 @@ namespace LR_Test.RL
                 int currentmax = Math.Min(episode, currentSuccesScale);
                 double percentage = (currentmax > 0 ? ((count / (currentmax * 1.0)) * 100.0) : 0);
                 Console.WriteLine($"Episode: {episode}, {succeses}/{fails} {percentage} {(Finished ? Succes ? "Succes" : "Fail" : "")}");
+                TakeTurn(episode);
 
-               // Thread.Sleep(50);
+                Thread.Sleep(50);
             }
         }
 

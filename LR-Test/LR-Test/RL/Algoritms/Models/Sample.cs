@@ -6,8 +6,10 @@ namespace LR_Test.RL.Algoritms.Models
 {
     public struct Sample
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public int XTo { get; set; }
+        public int YTo { get; set; }
+        public int XFrom { get; set; }
+        public int YFrom { get; set; }
         public int Action { get; set; }
         public double Reward { get; set; }
     }

@@ -43,7 +43,7 @@ namespace LR_Test.RL
         protected static int fails = 0;
         protected static int episode = 0;
         protected static int succeses = 0;
-        protected static readonly int currentSuccesScale = 1000;
+        protected static readonly int currentSuccesScale = 100;
 
         public RLGame(int width, int height, int[] level, int spawnX, int spawnY, double alpha, double epsilon, double gamma)
         {
@@ -103,7 +103,7 @@ namespace LR_Test.RL
                 Console.WriteLine($"Episode: {episode}, {succeses}/{fails} {percentage} {(Finished ? Succes ? "Succes" : "Fail" : "")}");
                 TakeTurn(episode);
 
-                Thread.Sleep(50);
+                Thread.Sleep(20);
             }
         }
 
@@ -162,7 +162,7 @@ namespace LR_Test.RL
             return GetTile(agentX, agentY);
         }
 
-        public void Reset()
+        public virtual void Reset()
         {
             agentX = spawnX;
             agentY = spawnY;

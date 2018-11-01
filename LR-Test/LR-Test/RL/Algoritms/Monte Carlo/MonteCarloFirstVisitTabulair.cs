@@ -6,14 +6,14 @@ using LR_Test.RL.Algoritms.Models;
 
 namespace LR_Test.RL.Algoritms.Monte_Carlo
 {
-    public class MonteCarloFistVisit : SampleGame
+    public class MonteCarloFistVisitTabulair : SampleGame
     {
         private readonly double[] value;
         private readonly int[] visits;
         private readonly double[] totalrewards;
         private readonly int maxPolicyEpisodes;
 
-        public MonteCarloFistVisit()
+        public MonteCarloFistVisitTabulair()
         {
             this.maxPolicyEpisodes = 10000;
             value = new double[width * height];
@@ -22,7 +22,7 @@ namespace LR_Test.RL.Algoritms.Monte_Carlo
 
         }
 
-        public MonteCarloFistVisit(double alpha, double epsilon, double gamma) : base(alpha, epsilon, gamma)
+        public MonteCarloFistVisitTabulair(double alpha, double epsilon, double gamma) : base(alpha, epsilon, gamma)
         {
             this.maxPolicyEpisodes = 10000;
             value = new double[width * height];
@@ -30,7 +30,7 @@ namespace LR_Test.RL.Algoritms.Monte_Carlo
             totalrewards = new double[width * height];
         }
 
-        public MonteCarloFistVisit(int width, int height, int[] level, int spawnX, int spawnY, double alpha, double epsilon, double gamma) : base(width, height, level, spawnX, spawnY, alpha, epsilon, gamma)
+        public MonteCarloFistVisitTabulair(int width, int height, int[] level, int spawnX, int spawnY, double alpha, double epsilon, double gamma) : base(width, height, level, spawnX, spawnY, alpha, epsilon, gamma)
         {
             this.maxPolicyEpisodes = 10000;
             value = new double[width * height];
@@ -48,8 +48,8 @@ namespace LR_Test.RL.Algoritms.Monte_Carlo
 
             CurrentEpisodeSample.Add(new Sample()
             {
-                X = agentX,
-                Y = agentY,
+                XTo = agentX,
+                YTo = agentY,
                 Action = move,
                 Reward = reward
             });
@@ -63,11 +63,11 @@ namespace LR_Test.RL.Algoritms.Monte_Carlo
 
             foreach (var sample in samples)
             {
-                if (processed[sample.X, sample.Y] == false)
+                if (processed[sample.XTo, sample.YTo] == false)
                 {
                     bool from(Sample s)
                     {
-                        return s.X == sample.X && s.Y == sample.Y;
+                        return s.XTo == sample.XTo && s.YTo == sample.YTo;
                     }
 
                     var allSamples = samples.FindIndex(from);// samples.Where(s => s.X == sample.X && s.Y == sample.Y).ToList();
@@ -80,10 +80,10 @@ namespace LR_Test.RL.Algoritms.Monte_Carlo
                         counter++;
                     }
 
-                    totalrewards[sample.X + sample.Y * width] += totalReward;
-                    visits[sample.X + sample.Y * width] += 1;
-                    value[sample.X + sample.Y * width] = totalrewards[sample.X + sample.Y * width] / visits[sample.X + sample.Y * width];
-                    processed[sample.X, sample.Y] = true;
+                    totalrewards[sample.XTo + sample.YTo * width] += totalReward;
+                    visits[sample.XTo + sample.YTo * width] += 1;
+                    value[sample.XTo + sample.YTo * width] = totalrewards[sample.XTo + sample.YTo * width] / visits[sample.XTo + sample.YTo * width];
+                    processed[sample.XTo, sample.YTo] = true;
                 }
             }
         }

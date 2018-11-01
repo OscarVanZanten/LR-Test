@@ -48,6 +48,8 @@ namespace LR_Test.RL.Algoritms
                     double percentage = (currentmax > 0 ? ((count / (currentmax * 1.0)) * 100.0) : 0);
                     Console.WriteLine($"Episode: {episode}, {succeses}/{fails} {percentage} {(Finished ? Succes ? "Succes" : "Fail" : "")}");
 
+                    Thread.Sleep(20);
+
                     if (Finished)
                     {
                         break;

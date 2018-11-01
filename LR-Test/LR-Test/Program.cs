@@ -45,9 +45,9 @@ namespace LR_Test
                 {"QLearning NeuralNetwork v2", new QLearningNeuralNetworkQuad(1,epsilon,gamma) },
                 {"SARSA Tabulair", new SARSATabulair(alpha,epsilon,gamma) },
                 {"SARSA NeuralNetwork", new SARSANeuralNetwork(1,epsilon,gamma) },
-                {"Temporal Difference Tabulair", new TemporalDifferenceTabulair(alpha,epsilon,gamma) },
-                {"Temporal Difference NeuralNetwork", new TemporalDifferenceNeuralNetwork(1,epsilon,gamma) },
-                {"Monte Carlo Prediction Tabulair", new MonteCarloFistVisit(alpha,epsilon,gamma) },
+                {"Temporal Difference Tabulair", new TemporalDifferenceTabulair(.005,epsilon,gamma, 0.7) },
+                {"Temporal Difference NeuralNetwork", new TemporalDifferenceNeuralNetwork(0.1,epsilon,gamma,0.7) },
+                {"Monte Carlo First visit Prediction Tabulair", new MonteCarloFistVisitTabulair(alpha,epsilon,gamma) },
             };
         }
 

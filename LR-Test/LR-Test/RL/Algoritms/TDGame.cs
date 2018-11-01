@@ -15,7 +15,7 @@ namespace LR_Test.RL.Algoritms
 
         protected abstract void SetValue(int x, int y, double value);
 
-        protected double CalculateUpdatedValue(double value1, double value2, double reward)
+        protected virtual double CalculateUpdatedValue(double value1, double value2, double reward)
         {
             return value1 + alpha * (reward + gamma * value2 - value1);
         }

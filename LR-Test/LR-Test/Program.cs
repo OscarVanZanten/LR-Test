@@ -46,7 +46,6 @@ namespace LR_Test
                 {"SARSA Tabulair", new SARSATabulair(alpha,epsilon,gamma) },
                 {"SARSA NeuralNetwork", new SARSANeuralNetwork(1,epsilon,gamma) },
                 {"Temporal Difference Tabulair", new TemporalDifferenceTabulair(.005,epsilon,gamma, 0.7) },
-                {"Temporal Difference NeuralNetwork", new TemporalDifferenceNeuralNetwork(0.1,epsilon,gamma,0.7) },
                 {"Monte Carlo First visit Prediction Tabulair", new MonteCarloFistVisitTabulair(alpha,epsilon,gamma) },
             };
         }

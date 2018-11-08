@@ -6,15 +6,14 @@ namespace LR_Test.Util
 {
     public class MathHelper
     {
+        /// <summary>
+        /// Sigmoid function onto x
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         public static double Sigmoid(double x)
         {
             return 1 / (1 + Math.Pow(Math.E, -x)) ;
-        }
-
-        public static double Derivative(double x)
-        {
-            double s = Sigmoid(x);
-            return (1 - (Math.Pow(s, 2)));
         }
     }
 }

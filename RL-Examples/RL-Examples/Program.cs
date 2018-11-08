@@ -12,18 +12,26 @@ using LR_Test.RL.Algoritms.Monte_Carlo;
 
 namespace LR_Test
 {
+    /// <summary>
+    /// LR example program
+    /// </summary>
     public class Program
     {
         private const string XORTestName = "XOR BackPropagation test";
 
+        /// <summary>
+        /// RL settings
+        /// </summary>
         private static readonly double alpha = .3;
         private static readonly double epsilon = .2;
         private static readonly double gamma = .8;
-
        
         private static Dictionary<string, RLGame> methodes;
      
-
+        /// <summary>
+        /// Start program
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             Init();
@@ -36,6 +44,9 @@ namespace LR_Test
             }
         }
 
+        /// <summary>
+        /// Initialize all methodes
+        /// </summary>
         public static void Init()
         {
             methodes = new Dictionary<string, RLGame>()
@@ -50,6 +61,10 @@ namespace LR_Test
             };
         }
 
+        /// <summary>
+        /// List of methodes available
+        /// </summary>
+        /// <returns></returns>
         public static string MethodesList()
         {
             string result = "Available methodes:\n";
@@ -66,6 +81,10 @@ namespace LR_Test
             return result;
         }
 
+        /// <summary>
+        /// Selects index for methode list
+        /// </summary>
+        /// <returns></returns>
         public static int SelectIndex()
         {
             Console.WriteLine("Select index to use that methode");
@@ -80,6 +99,10 @@ namespace LR_Test
             return index;
         }
 
+        /// <summary>
+        /// Executes the selected methode
+        /// </summary>
+        /// <param name="index"></param>
         public static void ExecuteMethode(int index)
         {
             if (index == 0)
@@ -93,6 +116,9 @@ namespace LR_Test
             }
         }
 
+        /// <summary>
+        /// A neural network trained to simulate a XOR gate
+        /// </summary>
         public static void XORTest()
         {
             SimpleNN network = new SimpleNN(0.5, 2, 3, 1);

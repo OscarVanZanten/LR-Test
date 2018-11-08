@@ -11,13 +11,33 @@ namespace LR_Test.RL.Algoritms
 
         public ValueGame(double alpha, double epsilon, double gamma) : base(alpha, epsilon, gamma) { }
 
+        /// <summary>
+        /// Gets values for position x and y 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         protected abstract double Value(int x, int y);
 
+        /// <summary>
+        /// Sets values for position x and y 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         protected abstract void SetValue(int x, int y, double value);
 
-        protected virtual double CalculateUpdatedValue(double value1, double value2, double reward)
+        /// <summary>
+        /// Calculate updated value
+        /// </summary>
+        /// <param name="previousvalue"></param>
+        /// <param name="nextValue"></param>
+        /// <param name="reward"></param>
+        /// <param name="elegibility"></param>
+        /// <returns></returns>
+        protected double CalculateUpdatedValue(double previousvalue, double nextValue, double reward, double elegibility)
         {
-            return value1 + alpha * (reward + gamma * value2 - value1);
+            return previousvalue + alpha * (reward + gamma * nextValue - nextValue) * elegibility;
         }
     }
 }

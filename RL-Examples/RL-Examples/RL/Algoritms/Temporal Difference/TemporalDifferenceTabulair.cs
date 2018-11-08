@@ -8,10 +8,24 @@ using LR_Test.RL.Algoritms.Models;
 
 namespace LR_Test.RL.Algoritms.Temporal_Difference
 {
+    /// <summary>
+    /// Temporal difference Lambda
+    /// </summary>
     public class TemporalDifferenceTabulair : ValueGame
     {
+        /// <summary>
+        /// Value table for states
+        /// </summary>
         private readonly double[] vtable;
+
+        /// <summary>
+        /// Elegbility table for states
+        /// </summary>
         private readonly double[] etable;
+
+        /// <summary>
+        /// Lambda
+        /// </summary>
         private readonly double lambda;
 
         private readonly int maxPolicyEpisodes;
@@ -32,13 +46,13 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
             this.etable = new double[width * height];
         }
 
-        protected double CalculateUpdatedValue(double value1, double value2, double reward, double elegibility)
-        {
-            return value1 + alpha * (reward + gamma * value2 - value2) * elegibility;
-        }
-
+        /// <summary>
+        /// Ai takes a turn
+        /// </summary>
+        /// <param name="episode"></param>
         public override void TakeTurn(int episode)
         {
+            // Update elegbility for current state
             SetElegbility(agentX, agentY, Elegbility(agentX, agentY) + 1);
 
             var state_1 = Value(agentX, agentY);
@@ -46,8 +60,10 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
             var reward = MakeMove(move);
             var state_2 = Value(agentX, agentY);
 
+            // Calculate TD delta
             var delta = reward + gamma * state_2 - state_1;
 
+            // update values
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -57,10 +73,13 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
                     SetElegbility(agentX, agentY, Elegbility(agentX, agentY) * lambda * gamma);
                 }
             }
-
+            //Check state
             CheckGameState(reward);
         }
 
+        /// <summary>
+        /// Resets the game
+        /// </summary>
         public override void Reset()
         {
             base.Reset();
@@ -70,23 +89,33 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
             }
         }
 
+        /// <summary>
+        /// Deterime move (epsilon-Greedy)
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="episode"></param>
+        /// <returns></returns>
         protected override int DetermineMove(int x, int y, int episode)
         {
+            //Calculate chance for random move
             double epsilonDiscount = episode > 0 ? (episode / (maxPolicyEpisodes * 1.0)) * epsilon : 0;
             double finalEpsilon = epsilon - (epsilonDiscount > epsilon ? epsilon : epsilonDiscount);
             bool randomMove = random.NextDouble() < (finalEpsilon);
             Console.WriteLine($"{finalEpsilon}");
 
+            //Get surounding values
             var values = new double[]
-               {
-                    Value(x, y-1),
-                    Value(x, y+1),
-                    Value(x-1, y),
-                    Value(x+1, y),
-               };
+            {
+                Value(x, y-1),
+                Value(x, y+1),
+                Value(x-1, y),
+                Value(x+1, y),
+            };
 
             if (randomMove)
             {
+                //Take random move
                 int move = random.Next(0, 4);
 
                 while (values[move] == -1)
@@ -94,11 +123,11 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
                     Console.WriteLine($"{move} {values[move]}");
                     move = random.Next(0, 4);
                 }
-                //Console.WriteLine($"{move} {values[move]}");
                 return move;
             }
             else
             {
+                // Take move on highest value
                 double highestValue = values.OrderByDescending(v => v).First();
                 int highestValueIndex = Array.IndexOf<double>(values, highestValue);
 
@@ -111,6 +140,12 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
             }
         }
 
+        /// <summary>
+        /// Gets values for position x and y 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         protected override double Value(int x, int y)
         {
             if (x < 0 || y < 0 || x > (width - 1) || y > (height - 1))
@@ -121,11 +156,23 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
             return vtable[x + y * width];
         }
 
+        /// <summary>
+        /// Sets values for position x and y 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         protected override void SetValue(int x, int y, double value)
         {
             vtable[x + y * width] = value;
         }
 
+        /// <summary>
+        /// Gets Elegbility for position x and y 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         private double Elegbility(int x, int y)
         {
             if (x < 0 || y < 0 || x > (width - 1) || y > (height - 1))
@@ -135,25 +182,15 @@ namespace LR_Test.RL.Algoritms.Temporal_Difference
             return etable[x + y * width];
         }
 
+        /// <summary>
+        /// Sets Elegbility for position x and y 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         private void SetElegbility(int x, int y, double e)
         {
             etable[x + y * width] = e;
-        }
-
-        public override string ToString()
-        {
-            string result = base.ToString() + '\n' + '\n';
-
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    result += $" {vtable[x + y * width].ToString("F3")}";
-                }
-                result += '\n';
-            }
-
-            return result;
         }
     }
 }

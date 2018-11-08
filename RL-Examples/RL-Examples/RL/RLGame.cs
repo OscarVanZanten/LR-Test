@@ -6,6 +6,9 @@ using System.Threading;
 
 namespace LR_Test.RL
 {
+    /// <summary>
+    /// Tile types in the level
+    /// </summary>
     public enum TileType { Empty, Wall, Goal, Fail }
 
     public abstract class RLGame
@@ -18,12 +21,13 @@ namespace LR_Test.RL
         protected const int DEFAULT_HEIGHT = 3;
         protected const int DEFAULT_SPAWNX = 0;
         protected const int DEFAULT_SPAWNY = 2;
+
         protected static readonly int[] DEFAULT_LEVEL = new int[DEFAULT_WIDTH * DEFAULT_HEIGHT]
-            {
-                0,0,0,2,
-                0,1,0,3,
-                0,0,0,0
-            };
+        {
+            0,0,0,2,
+            0,1,0,3,
+            0,0,0,0
+        };
 
         protected Random random;
         protected int width;
@@ -70,18 +74,22 @@ namespace LR_Test.RL
         {
         }
 
+        /// <summary>
+        /// Training loop
+        /// </summary>
         public virtual void Run()
         {
+            //succes/fail results from last few sprints
             Queue<bool> result = new Queue<bool>();
-
-            Thread.Sleep(100);
 
             while (true)
             {
                 Console.Clear();
 
+                //Print board
                 Console.WriteLine(this);
 
+                //Check if the episode is finished
                 if (Finished)
                 {
                     episode++;
@@ -94,25 +102,48 @@ namespace LR_Test.RL
 
                     succeses += Succes ? 1 : 0;
                     fails += Succes ? 0 : 1;
+
+                    // Reset game back to start game
                     Reset();
                 }
 
+                // Print the current succes rate and episode count
                 int count = result.Where(v => v == true).Count();
                 int currentmax = Math.Min(episode, currentSuccesScale);
                 double percentage = (currentmax > 0 ? ((count / (currentmax * 1.0)) * 100.0) : 0);
                 Console.WriteLine($"Episode: {episode}, {succeses}/{fails} {percentage} {(Finished ? Succes ? "Succes" : "Fail" : "")}");
+
+                // AI takes turn
                 TakeTurn(episode);
 
-                Thread.Sleep(20);
+                // Slow down game
+                Thread.Sleep(50);
             }
         }
 
+        /// <summary>
+        /// AI takes turn in the game
+        /// </summary>
+        /// <param name="episode"></param>
         public abstract void TakeTurn(int episode);
 
+        /// <summary>
+        /// Move deterimened by policy
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="episode"></param>
+        /// <returns></returns>
         protected abstract int DetermineMove(int x, int y, int episode);
 
+        /// <summary>
+        /// AI makes move
+        /// </summary>
+        /// <param name="move"></param>
+        /// <returns>reward</returns>
         protected double MakeMove(int move)
         {
+            // Change position depending on move
             switch (move)
             {
                 case 0:
@@ -140,6 +171,7 @@ namespace LR_Test.RL
                     }
                     break;
             }
+            // Returns reward depending on which tile it landed
             switch (CurrentTile())
             {
                 case TileType.Goal:
@@ -152,16 +184,29 @@ namespace LR_Test.RL
             }
         }
 
+        /// <summary>
+        /// Get tile for x and y
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         protected TileType GetTile(int x, int y)
         {
             return (TileType)level[x + y * width];
         }
 
+        /// <summary>
+        /// Gets current tile the AI is on
+        /// </summary>
+        /// <returns></returns>
         protected TileType CurrentTile()
         {
             return GetTile(agentX, agentY);
         }
 
+        /// <summary>
+        /// Resets the game
+        /// </summary>
         public virtual void Reset()
         {
             agentX = spawnX;
@@ -169,6 +214,10 @@ namespace LR_Test.RL
             Finished = false;
         }
 
+        /// <summary>
+        /// Checks if games is over ornot
+        /// </summary>
+        /// <param name="reward"></param>
         public void CheckGameState(double reward)
         {
             if (reward == 1 || reward == -1)
@@ -178,6 +227,10 @@ namespace LR_Test.RL
             }
         }
 
+        /// <summary>
+        /// Prints the board
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             string result = "";
